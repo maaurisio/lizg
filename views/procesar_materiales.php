@@ -25,4 +25,3 @@ if (isset($_POST['materiales']) && !empty($_POST['materiales'])) {
 } else {
     echo "No se seleccionaron materiales para guardar.";
 }
-

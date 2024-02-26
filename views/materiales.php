@@ -28,13 +28,11 @@ if (isset($_POST['busqueda'])) {
         <a href="<?php echo isset($_GET['id']) ? 'informacion_proyecto.php?id=' . $_GET['id'] : 'informacion_proyecto.php'; ?>" class="btn btn-warning m-2">Volver</a>
 
 
-        <form action="procesar_seleccion.php?id=<?php echo $idProyecto; ?>" method="POST" class="d-flex flex-column">
+        <form action="procesar_materiales.php?id=<?php echo $idProyecto; ?>" method="POST" class="d-flex flex-column">
             <!-- Input oculto para pasar el ID del proyecto -->
             <input type="hidden" name="idProyecto" value="<?php echo $idProyecto; ?>">
 
-            <div class="mt-auto">
-                <button type="submit" class="btn btn-primary">Guardar Selección</button>
-            </div>
+
             <div class="form-group mt-3">
                 <!-- Contenedor para la lista de materiales -->
                 <?php
@@ -66,6 +64,9 @@ if (isset($_POST['busqueda'])) {
                     echo "No se encontraron materiales.";
                 }
                 ?>
+            </div>
+            <div class="mt-auto">
+                <button type="submit" class="btn btn-primary">Guardar Selección</button>
             </div>
         </form>
 
