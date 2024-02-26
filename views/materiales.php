@@ -25,14 +25,17 @@ if (isset($_POST['busqueda'])) {
             </div>
         </form>
 
-        <a href="<?php echo isset($_GET['id']) ? 'informacion_proyecto.php?id=' . $_GET['id'] : 'informacion_proyecto.php'; ?>" class="btn btn-warning">Volver</a>
+        <a href="<?php echo isset($_GET['id']) ? 'informacion_proyecto.php?id=' . $_GET['id'] : 'informacion_proyecto.php'; ?>" class="btn btn-warning m-2">Volver</a>
 
 
-        <form action="procesar_seleccion.php" method="POST" class="d-flex flex-column">
+        <form action="procesar_seleccion.php?id=<?php echo $idProyecto; ?>" method="POST" class="d-flex flex-column">
+            <!-- Input oculto para pasar el ID del proyecto -->
+            <input type="hidden" name="idProyecto" value="<?php echo $idProyecto; ?>">
+
             <div class="mt-auto">
                 <button type="submit" class="btn btn-primary">Guardar Selección</button>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-3">
                 <!-- Contenedor para la lista de materiales -->
                 <?php
                 // Consulta SQL para obtener los materiales que coinciden con el término de búsqueda
@@ -52,7 +55,7 @@ if (isset($_POST['busqueda'])) {
                     while ($row = $result->fetch_assoc()) {
                 ?>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="materiales[]" value="<?php echo $row['codigo']; ?>">
+                            <input class="form-check-input border-primary" type="checkbox" name="materiales[]" value="<?php echo $row['codigo']; ?>">
                             <label class="form-check-label">
                                 <?php echo $row['nombre']; ?>
                             </label>
@@ -64,11 +67,44 @@ if (isset($_POST['busqueda'])) {
                 }
                 ?>
             </div>
-            <!-- Contenedor para el botón "Guardar Selección" -->
-
         </form>
 
     </div>
+    <script>
+        // Espera a que el DOM esté completamente cargado
+        document.addEventListener("DOMContentLoaded", function() {
+            // Obtiene los materiales seleccionados almacenados en el local storage
+            var selectedMaterials = JSON.parse(localStorage.getItem('selectedMaterials')) || [];
+
+            // Recorre los materiales seleccionados y marca los checkbox correspondientes
+            selectedMaterials.forEach(function(material) {
+                var checkbox = document.querySelector('input[name="materiales[]"][value="' + material + '"]');
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+
+            // Escucha los eventos de cambio en los checkbox
+            var checkboxes = document.querySelectorAll('input[name="materiales[]"]');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function(event) {
+                    // Si el checkbox está marcado, agrega el material seleccionado a la lista
+                    if (this.checked) {
+                        selectedMaterials.push(parseInt(this.value));
+                    } else {
+                        // Si el checkbox está desmarcado, remueve el material seleccionado de la lista
+                        var index = selectedMaterials.indexOf(parseInt(this.value));
+                        if (index !== -1) {
+                            selectedMaterials.splice(index, 1);
+                        }
+                    }
+
+                    // Guarda los materiales seleccionados en el local storage
+                    localStorage.setItem('selectedMaterials', JSON.stringify(selectedMaterials));
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
