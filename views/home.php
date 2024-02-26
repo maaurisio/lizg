@@ -49,7 +49,7 @@ $result = $stmt->get_result();
             </div>
 
             <div class="col-auto">
-                <a href="index.php" class="btn btn-danger">Salir</a>
+                <a href="../index.php" class="btn btn-danger">Salir</a>
             </div>
 
             <form action="" method="post" accept-charset="utf-8">
