@@ -8,7 +8,7 @@ include "../config/partials/header.php";
 if (isset($_GET['id']) && !empty($_GET['id'])) {
     $idProyecto = $_GET['id'];
 
-    $sql_proyecto = "SELECT * FROM Proyecto WHERE id = ?";
+    $sql_proyecto = "SELECT * FROM proyecto WHERE id = ?";
     $stmt_proyecto = $conn->prepare($sql_proyecto);
     $stmt_proyecto->bind_param("i", $idProyecto);
     $stmt_proyecto->execute();
@@ -20,7 +20,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
         <body class="d-flex flex-column h-100">
             <img src="<?php echo $url ?>images/encabezadoactual.png" width="700">
-            <div class="container d-flex justify-content-center align-item-center">
+            <div class="container d-flex justify-content-center align-item-center mb-5">
                 <div class="border border-danger p-3 mb-2 rounded mt-2">
                     <h1>Información del Proyecto</h1>
                     <p><strong>Nombre del Proyecto:</strong> <?php echo $proyecto['nombre']; ?></p>
@@ -53,15 +53,20 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                             <th>Acciones</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         <?php
-                        // Consulta SQL para obtener los materiales asociados al proyecto
-                        $sql_materiales = "SELECT m.codigo, m.nombre FROM Materiales m INNER JOIN materialesproyecto mp ON m.codigo = mp.codigoMaterial WHERE mp.idProyecto = ?";
+                        // Consulta SQL para obtener los materiales asociados al proyecto actual
+                        $sql_materiales = "SELECT m.codigo, m.nombre, d.cantidad AS cantidad_detalle 
+                        FROM materiales m 
+                        INNER JOIN materialesproyecto mp ON m.codigo = mp.codigoMaterial 
+                        LEFT JOIN detalle d ON m.codigo = d.codigoMaterial AND d.idProyecto = ?
+                        WHERE mp.idProyecto = ?";
+
                         $stmt_materiales = $conn->prepare($sql_materiales);
-                        $stmt_materiales->bind_param("i", $idProyecto);
+                        $stmt_materiales->bind_param("ii", $idProyecto, $idProyecto);
                         $stmt_materiales->execute();
                         $result_materiales = $stmt_materiales->get_result();
+
 
                         // Verificar si se encontraron materiales asociados al proyecto
                         if ($result_materiales->num_rows > 0) {
@@ -69,17 +74,18 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                             while ($row = $result_materiales->fetch_assoc()) {
                                 $codigo = stripslashes($row['codigo']);
                                 $nombre = stripslashes($row['nombre']);
+                                $cantidad_detalle = $row['cantidad_detalle'];
                         ?>
                                 <tr>
                                     <td><?php echo $codigo; ?></td>
                                     <td><?php echo $nombre; ?></td>
                                     <td>
                                         <!-- Campo de entrada para la cantidad -->
-                                        <input type='number' name='cantidad_<?php echo $codigo; ?>' class='form-control' required>
+                                        <input type='number' name='cantidad_<?php echo $codigo; ?>' class='form-control' value='<?php echo $cantidad_detalle; ?>' required>
                                     </td>
                                     <td>
-                                        <a href="#">Eliminar</a>
-                                        <a href="#">Editar</a>
+                                        <a href="#" class="btn btn-danger">Eliminar</a>
+                                        <a href="#" class="btn btn-warning">Editar</a>
                                     </td>
                                 </tr>
                         <?php
@@ -90,8 +96,11 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                         ?>
                     </tbody>
                 </table>
-                <button type="submit" class="btn btn-primary">Guardar</button>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary my-5">Guardar</button>
+                </div>
             </form>
+
         </body>
 <?php
     } else {

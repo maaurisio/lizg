@@ -25,15 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: views/home.php");
             exit();
         } else {
-            echo "La contraseña no coincide";
+            $error_msg = "La contraseña no coincide";
         }
     } else {
-        echo "Usuario no encontrado";
+        $error_msg = "Usuario no encontrado";
     }
 }
+
 require "config/partials/header.php";
 ?>
-
 
 <body class="bg-primary">
     <style>
@@ -64,6 +64,14 @@ require "config/partials/header.php";
                                         <div class="form-group d-flex align-items-center justify-content-center mt-4 mb-0">
                                             <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
                                         </div>
+                                        <?php if (isset($error_msg)) : ?>
+                                            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                                                <?php echo $error_msg; ?>
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                        <?php endif; ?>
                                     </form>
                                 </div>
                             </div>
@@ -72,12 +80,10 @@ require "config/partials/header.php";
                 </div>
             </main>
         </div>
-
     </div>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="js/scripts.js"></script>
 </body>
-
 
 </html>
