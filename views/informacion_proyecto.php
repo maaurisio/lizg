@@ -11,16 +11,16 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     $idProyecto = $_GET['id'];
 
     // Consulta SQL para obtener los datos del proyecto
-    $sql = "SELECT * FROM Proyecto WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $idProyecto);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $sql_proyecto = "SELECT * FROM Proyecto WHERE id = ?";
+    $stmt_proyecto = $conn->prepare($sql_proyecto);
+    $stmt_proyecto->bind_param("i", $idProyecto);
+    $stmt_proyecto->execute();
+    $result_proyecto = $stmt_proyecto->get_result();
 
     // Verificar si se encontró el proyecto
-    if ($result->num_rows > 0) {
+    if ($result_proyecto->num_rows > 0) {
         // Obtener los datos del proyecto
-        $proyecto = $result->fetch_assoc();
+        $proyecto = $result_proyecto->fetch_assoc();
 ?>
 
         <body class="d-flex flex-column h-100">
@@ -50,12 +50,41 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                 </thead>
 
                 <tbody>
+                    <?php
+                    // Consulta SQL para obtener los materiales asociados al proyecto
+                    $sql_materiales = "SELECT m.codigo, m.nombre FROM Materiales m INNER JOIN materialesproyecto mp ON m.codigo = mp.codigoMaterial WHERE mp.idProyecto = ?";
+                    $stmt_materiales = $conn->prepare($sql_materiales);
+                    $stmt_materiales->bind_param("i", $idProyecto);
+                    $stmt_materiales->execute();
+                    $result_materiales = $stmt_materiales->get_result();
+
+                    // Verificar si se encontraron materiales asociados al proyecto
+                    if ($result_materiales->num_rows > 0) {
+                        // Mostrar los materiales en la tabla
+                        while ($row = $result_materiales->fetch_assoc()) {
+                            $codigo = stripslashes($row['codigo']);
+                            $nombre = stripslashes($row['nombre']);
+                    ?>
+                            <tr>
+                                <td><?php echo $codigo; ?></td>
+                                <td><?php echo $nombre; ?></td>
+                                <td>
+                                    <!-- Campo de entrada para la cantidad -->
+                                    <input type='number' name='cantidad_<?php echo $codigo; ?>' value='<?php echo $row['cantidad']; ?>' class='form-control'>
+                                </td>
+                                <td>Acción</td><!-- Aquí puedes agregar las acciones que desees -->
+                            </tr>
+                    <?php
+                        }
+                    } else {
+                        echo "<tr><td colspan='4'>No hay materiales asociados a este proyecto.</td></tr>";
+                    }
+                    ?>
                 </tbody>
             </table>
+
+
         </body>
-
-
-        </html>
 <?php
     } else {
         echo "<p>No se encontró el proyecto.</p>";

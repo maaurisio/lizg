@@ -8,9 +8,42 @@ include "../config/partials/header.php";
 // Variable para almacenar el término de búsqueda
 $busqueda = "";
 
+// Variable para almacenar el ID del proyecto
+$idProyecto = isset($_GET['id']) ? $_GET['id'] : null;
+
 // Verificar si se envió el formulario de búsqueda
 if (isset($_POST['busqueda'])) {
     $busqueda = $_POST['busqueda'];
+}
+
+// Verificar si se envió el formulario para guardar la selección de materiales
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Verificar si se recibieron materiales seleccionados
+    if (isset($_POST['materiales']) && !empty($_POST['materiales']) && $idProyecto) {
+        // Recorrer los materiales seleccionados
+        foreach ($_POST['materiales'] as $material) {
+            // Insertar el material seleccionado en la base de datos
+            $sql = "INSERT INTO materialesproyecto (idProyecto, codigoMaterial) VALUES (?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $idProyecto, $material);
+            $stmt->execute();
+        }
+
+        echo "Se genero completamente";
+        header("Location: informacion_proyecto.php?id=$idProyecto"); // Redirige con el ID del proyecto
+        exit; // Detiene la ejecución del script después de la redirección
+    } else {
+        echo "No se proporcionaron materiales seleccionados o no se proporcionó un ID de proyecto válido.";
+    }
+}
+
+// Limpiar el almacenamiento local si se cambió de proyecto
+if ($idProyecto) {
+    $storedProjectId = isset($_SESSION['projectId']) ? $_SESSION['projectId'] : null;
+    if ($storedProjectId !== $idProyecto) {
+        unset($_SESSION['selectedMaterials']);
+    }
+    $_SESSION['projectId'] = $idProyecto;
 }
 ?>
 
@@ -28,11 +61,12 @@ if (isset($_POST['busqueda'])) {
         <a href="<?php echo isset($_GET['id']) ? 'informacion_proyecto.php?id=' . $_GET['id'] : 'informacion_proyecto.php'; ?>" class="btn btn-warning m-2">Volver</a>
 
 
-        <form action="procesar_materiales.php?id=<?php echo $idProyecto; ?>" method="POST" class="d-flex flex-column">
+        <form action="" method="POST" class="d-flex flex-column">
             <!-- Input oculto para pasar el ID del proyecto -->
             <input type="hidden" name="idProyecto" value="<?php echo $idProyecto; ?>">
-
-
+            <div class="mt-auto">
+                <button type="submit" class="btn btn-primary">Guardar Selección</button>
+            </div>
             <div class="form-group mt-3">
                 <!-- Contenedor para la lista de materiales -->
                 <?php
@@ -65,9 +99,7 @@ if (isset($_POST['busqueda'])) {
                 }
                 ?>
             </div>
-            <div class="mt-auto">
-                <button type="submit" class="btn btn-primary">Guardar Selección</button>
-            </div>
+
         </form>
 
     </div>
