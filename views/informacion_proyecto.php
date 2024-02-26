@@ -84,9 +84,10 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                                         <input type='number' name='cantidad_<?php echo $codigo; ?>' class='form-control' value='<?php echo $cantidad_detalle; ?>' required>
                                     </td>
                                     <td>
-                                        <a href="#" class="btn btn-danger">Eliminar</a>
+                                        <a href="eliminar_material.php?codigo=<?php echo $codigo; ?>&idProyecto=<?php echo $idProyecto; ?>" class="btn btn-danger">Eliminar</a>
                                         <a href="#" class="btn btn-warning">Editar</a>
                                     </td>
+
                                 </tr>
                         <?php
                             }

@@ -41,10 +41,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 if ($idProyecto) {
     $storedProjectId = isset($_SESSION['projectId']) ? $_SESSION['projectId'] : null;
     if ($storedProjectId !== $idProyecto) {
-        unset($_SESSION['selectedMaterials']);
+        unset($_SESSION['selectedMaterials'][$idProyecto]); // Elimina la selección de materiales para el proyecto actual
     }
     $_SESSION['projectId'] = $idProyecto;
 }
+
 ?>
 
 <body>
@@ -65,7 +66,7 @@ if ($idProyecto) {
             <!-- Input oculto para pasar el ID del proyecto -->
             <input type="hidden" name="idProyecto" value="<?php echo $idProyecto; ?>">
             <div class="mt-auto">
-                <button type="submit" class="btn btn-primary">Guardar Selección</button>
+                <button type="submit" class="btn btn-primary" onclick="limpiarLocalStorage()">Guardar Selección</button>
             </div>
             <div class="form-group mt-3">
                 <!-- Contenedor para la lista de materiales -->
@@ -85,9 +86,14 @@ if ($idProyecto) {
                 if ($result->num_rows > 0) {
                     // Mostrar los materiales con checkboxes
                     while ($row = $result->fetch_assoc()) {
+                        // Verificar si este material está seleccionado
+                        $checked = '';
+                        if (isset($_SESSION['selectedMaterials']) && in_array($row['codigo'], $_SESSION['selectedMaterials'])) {
+                            $checked = 'checked';
+                        }
                 ?>
                         <div class="form-check">
-                            <input class="form-check-input border-primary" type="checkbox" name="materiales[]" value="<?php echo $row['codigo']; ?>">
+                            <input class="form-check-input border-primary" type="checkbox" name="materiales[]" value="<?php echo $row['codigo']; ?>" <?php echo $checked; ?>>
                             <label class="form-check-label">
                                 <?php echo $row['nombre']; ?>
                             </label>
@@ -99,15 +105,22 @@ if ($idProyecto) {
                 }
                 ?>
             </div>
-
         </form>
+
+        <script>
+            function limpiarLocalStorage() {
+                localStorage.removeItem('selectedMaterials_' + <?php echo $idProyecto; ?>);
+            }
+        </script>
+
 
     </div>
     <script>
         // Espera a que el DOM esté completamente cargado
         document.addEventListener("DOMContentLoaded", function() {
             // Obtiene los materiales seleccionados almacenados en el local storage
-            var selectedMaterials = JSON.parse(localStorage.getItem('selectedMaterials')) || [];
+            var selectedMaterials = JSON.parse(localStorage.getItem('selectedMaterials_' + <?php echo $idProyecto; ?>)) || [];
+
 
             // Recorre los materiales seleccionados y marca los checkbox correspondientes
             selectedMaterials.forEach(function(material) {
