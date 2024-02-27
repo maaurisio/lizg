@@ -14,7 +14,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     $idProyecto = $_GET['id'];
 
     // Consulta SQL para obtener los datos del proyecto
-    $sql = "SELECT * FROM psroyecto WHERE id = ?";
+    $sql = "SELECT * FROM proyecto WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $idProyecto);
     $stmt->execute();

@@ -5,9 +5,49 @@ include "../config/database.php";
 // Incluir el encabezado
 include "../config/partials/header.php";
 
-if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $idProyecto = $_GET['id'];
+// Variable para almacenar el ID del proyecto
+$idProyecto = isset($_GET['id']) ? $_GET['id'] : null;
 
+// Variable para almacenar mensajes de error o éxito
+$mensaje = '';
+$tipoMensaje = '';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Verificar si se recibió el ID del proyecto y al menos un campo de cantidad
+    if (isset($_POST['idProyecto']) && !empty($_POST['idProyecto'])) {
+        $idProyecto = $_POST['idProyecto'];
+        $materiales = array();
+
+        // Recorrer los campos de cantidad
+        foreach ($_POST as $key => $value) {
+            // Verificar si el campo es de cantidad (tiene el prefijo "cantidad_")
+            if (strpos($key, 'cantidad_') !== false) {
+                // Obtener el código de material desde el nombre del campo
+                $codigoMaterial = substr($key, strlen('cantidad_'));
+
+                // Guardar el código de material y la cantidad en el array de materiales
+                $materiales[$codigoMaterial] = $value;
+            }
+        }
+
+        // Insertar los datos en la nueva tabla de la base de datos
+        foreach ($materiales as $codigoMaterial => $cantidad) {
+            $sql = "INSERT INTO detalle (idProyecto, codigoMaterial, cantidad) VALUES (?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("isi", $idProyecto, $codigoMaterial, $cantidad);
+            $stmt->execute();
+        }
+
+        $mensaje = "Se guardo correctamente, ahora genere el PDF con la información.";
+        $tipoMensaje = 'success';
+    } else {
+        $mensaje = "No se proporcionó un ID de proyecto válido o cantidad.";
+        $tipoMensaje = 'error';
+    }
+}
+
+// Consultar información del proyecto
+if (!empty($idProyecto)) {
     $sql_proyecto = "SELECT * FROM proyecto WHERE id = ?";
     $stmt_proyecto = $conn->prepare($sql_proyecto);
     $stmt_proyecto->bind_param("i", $idProyecto);
@@ -42,7 +82,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
 
             </div>
-            <form action="guardar_cantidad.php" method="POST">
+            <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                 <input type="hidden" name="idProyecto" value="<?php echo $idProyecto; ?>">
                 <table class="table table-sm table-striped table-hover mt-4 container">
                     <thead class="table-dark">
@@ -97,12 +137,24 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                         ?>
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-center"> <!-- Div para centrar horizontalmente -->
+                    <?php
+                    // Mostrar mensaje de éxito o error con estilos CSS
+                    if (!empty($mensaje)) {
+                        $alertClass = ($tipoMensaje === 'success') ? 'alert-success' : 'alert-danger';
+                        echo "<div class='alert $alertClass alert-dismissible text-center mx-auto d-inline-block' style='width: fit-content;' role='alert'>
+                            $mensaje
+                            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                        </div>";
+                    }
+                    ?>
+                </div> <!-- Cierre del div para centrar horizontalmente -->
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary my-5">Guardar</button>
+                    <button type="submit" class="btn btn-primary my-2">Guardar</button>
                 </div>
             </form>
-
         </body>
+
 <?php
     } else {
         echo "<p>No se encontró el proyecto.</p>";
@@ -110,4 +162,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 } else {
     echo "<p>No se proporcionó un ID de proyecto válido.</p>";
 }
+
+
+
 ?>
