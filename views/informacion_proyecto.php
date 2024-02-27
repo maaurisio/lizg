@@ -64,7 +64,7 @@ if (!empty($idProyecto)) {
         <body class="d-flex flex-column h-100">
             <img src="<?php echo $url ?>images/encabezadoactual.png" width="700">
             <div class="container d-flex justify-content-center align-item-center mb-5">
-                <div class="border border-danger p-3 mb-2 rounded mt-2">
+                <div class="border border-success border-3 p-3 mb-2 rounded mt-2">
                     <h1>Información del Proyecto</h1>
                     <p><strong>Nombre del Proyecto:</strong> <?php echo $proyecto['nombre']; ?></p>
                     <p><strong>Descripción del Proyecto:</strong> <?php echo $proyecto['descripcion']; ?></p>
