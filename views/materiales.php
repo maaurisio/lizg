@@ -1,3 +1,4 @@
+
 <?php
 // Incluir el archivo de configuración de la base de datos
 include "../config/database.php";
@@ -12,8 +13,25 @@ $busqueda = "";
 $idProyecto = isset($_GET['id']) ? $_GET['id'] : null;
 
 // Verificar si se envió el formulario de búsqueda
-if (isset($_POST['busqueda'])) {
-    $busqueda = $_POST['busqueda'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Obtener el término de búsqueda
+    $busqueda = isset($_POST['busqueda']) ? $_POST['busqueda'] : '';
+
+    // Verificar si el término de búsqueda tiene al menos 4 letras
+    if (strlen($busqueda) >= 4) {
+        // Realizar la búsqueda en la base de datos y mostrar los resultados
+        $sql = "SELECT * FROM Materiales WHERE nombre LIKE ?";
+        $stmt = $conn->prepare($sql);
+        $param_busqueda = "%" . $busqueda . "%";
+        $stmt->bind_param("s", $param_busqueda);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        // Resto del código para mostrar los resultados de la búsqueda...
+    } else {
+        // Mostrar una alerta de JavaScript si el término de búsqueda no cumple con los requisitos
+        echo "<script>alert('El término de búsqueda debe tener al menos 4 letras.');</script>";
+    }
 }
 
 // Verificar si se envió el formulario para guardar la selección de materiales
