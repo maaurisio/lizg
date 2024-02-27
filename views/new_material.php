@@ -4,20 +4,33 @@ include "../config/database.php";
 
 // Incluir el encabezado
 include "../config/partials/header.php";
+
+$idProyecto = $_GET['id'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre_material = $_POST['nombre_material'];
+
+    // Generar un código aleatorio único
+    $codigo = uniqid();
+
+    $stmt = $conn->prepare("INSERT INTO materiales (codigo, nombre, codigocero) VALUES (?, ?, '000')");
+    $stmt->bind_param("ss", $codigo, $nombre_material);
+
+    if ($stmt->execute()) {
+        header("Location: informacion_proyecto.php?mensaje=Nuevo+material+agregado&id=$idProyecto");
+    }
+}
+
 ?>
 
 <body>
     <img src="<?php echo $url ?>images/encabezadoactual.png" width="700" class="img-fluid mb-4" alt="Encabezado">
     <h3 class="mb-4 text-center">Nuevo material que no existe</h3>
     <div class="container mt-5 col-md-4">
-        <form class="py-2">
+        <form class="py-2" action="" method="POST">
             <div class="form-group">
-                <label for="codigo">Código Material</label>
-                <input type="text" class="form-control" id="codigo" placeholder="000" value="0000" readonly>
-            </div>
-            <div class="form-group mt-3">
                 <label for="nombre">Nombre Material</label>
-                <input type="text" class="form-control" id="nombre" placeholder="Nombre del nuevo material">
+                <input type="text" class="form-control" id="nombre" name="nombre_material" placeholder="Nombre del nuevo material">
             </div>
             <div class="my-2">
                 <button type="submit" class="btn btn-success mr-2">Guardar Material</button>
@@ -26,5 +39,3 @@ include "../config/partials/header.php";
         </form>
     </div>
 </body>
-
-</html>
