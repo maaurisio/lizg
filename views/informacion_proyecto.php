@@ -13,6 +13,9 @@ $mensaje = '';
 $tipoMensaje = '';
 $readonly = '';
 
+// Variable para determinar si se han guardado los materiales
+$guardado = false;
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Verificar si se recibió el ID del proyecto y al menos un campo de cantidad
     if (isset($_POST['idProyecto']) && !empty($_POST['idProyecto'])) {
@@ -38,6 +41,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("isi", $idProyecto, $codigoMaterial, $cantidad);
             $stmt->execute();
         }
+
+        // Marcar como guardado
+        $guardado = true;
 
         header("Location: home.php?mensaje=¡Se guardó correctamente ahora puede generar el PDF!&tipo=success");
         $readonly = 'readonly';
@@ -127,10 +133,10 @@ if (!empty($idProyecto)) {
                                         <input type='number' min="0" autofocus name='cantidad_<?php echo $codigo; ?>' class='form-control' value='<?php echo $cantidad_detalle; ?>' <?php echo $readonly; ?> required>
                                     </td>
                                     <td>
-                                        <a href="eliminar_material.php?codigo=<?php echo $codigo; ?>&idProyecto=<?php echo $idProyecto; ?>" class="btn btn-danger">Eliminar</a>
                                         <?php
-                                        // Si no se ha guardado aún, mostrar el botón "Editar"
-                                        if (empty($readonly)) {
+                                        // Si se ha guardado, mostrar los botones de editar y eliminar
+                                        if ($guardado) {
+                                            echo '<a href="eliminar_material.php?codigo=<?php echo $codigo; ?>&idProyecto=<?php echo $idProyecto; ?>" class="btn btn-danger">Eliminar</a>';
                                             echo '<button type="button" class="btn btn-warning editar-cantidad">Editar</button>';
                                         }
                                         ?>

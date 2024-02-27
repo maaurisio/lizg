@@ -41,6 +41,10 @@ require "config/partials/header.php";
             font-size: 500;
             border-bottom: 2px solid #1C3969;
         }
+
+        body {
+            background-image: url('images/fondo-negro.jpg');
+        }
     </style>
     <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">

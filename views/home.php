@@ -44,9 +44,11 @@ $result = $stmt->get_result();
             <?php echo $nombre; ?>
         </div>
         <?php if (isset($_SESSION['msg']) && isset($_SESSION['color'])) { ?>
-            <div class="alert alert-<?= $_SESSION['color']; ?> alert-dismissible fade show" role="alert">
-                <?= $_SESSION['msg']; ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="d-flex justify-content-center"> <!-- Contenedor flexbox -->
+                <div class="alert alert-<?= $_SESSION['color']; ?> alert-dismissible fade show text-center" role="alert">
+                    <?= $_SESSION['msg']; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             </div>
 
         <?php
@@ -61,10 +63,12 @@ $result = $stmt->get_result();
 
         // Mostrar la alerta si hay un mensaje y un tipo de alerta válidos
         if (!empty($mensaje) && !empty($tipo)) {
-            echo "<div class='alert alert-$tipo alert-dismissible fade show' role='alert'>
-            $mensaje
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-          </div>";
+            echo "<div class='d-flex justify-content-center'>"; // Contenedor flexbox para centrar horizontalmente
+            echo "<div class='alert alert-$tipo alert-dismissible fade show text-center' role='alert'>";
+            echo $mensaje;
+            echo "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>";
+            echo "</div>";
+            echo "</div>";
         }
         ?>
 

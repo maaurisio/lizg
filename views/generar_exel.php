@@ -1,10 +1,25 @@
 <?php
-require '../config/database.php';
+require_once '../config/database.php';
+require_once '../vendor/autoload.php'; // Asegúrate de incluir el archivo autoload.php de PhpSpreadsheet en tu proyecto
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 // Obtener el ID del proyecto seleccionado
 $idProyecto = isset($_POST['id_proyecto']) ? intval($_POST['id_proyecto']) : null;
 
 if ($idProyecto) {
+    // Crear instancia de Spreadsheet
+    $spreadsheet = new Spreadsheet();
+
+    // Obtener la hoja activa
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Establecer encabezados
+    $sheet->setCellValue('A1', 'Código');
+    $sheet->setCellValue('B1', 'Material');
+    $sheet->setCellValue('C1', 'Cantidad');
+
     // Obtener los datos del proyecto desde la base de datos
     $sql = "SELECT d.*, m.nombre AS nombre_material
             FROM detalle d
@@ -15,21 +30,23 @@ if ($idProyecto) {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Configurar el tipo de contenido y el nombre del archivo
-    header('Content-Type: text/csv');
-    header('Content-Disposition: attachment;filename="detalle_proyecto.csv"');
-    header('Cache-Control: max-age=0');
-
-    // Crear un puntero de archivo temporal (output stream)
-    $output = fopen('php://output', 'w');
-
-    // Escribir los datos en el archivo CSV
+    // Escribir los datos en el archivo Excel
+    $row = 2; // Comenzar en la fila 2 (debajo de los encabezados)
     while ($data = $result->fetch_assoc()) {
-        fputcsv($output, array($data['codigoMaterial'], $data['nombre_material'], $data['cantidad']));
+        $sheet->setCellValue('A' . $row, $data['codigoMaterial']);
+        $sheet->setCellValue('B' . $row, $data['nombre_material']);
+        $sheet->setCellValue('C' . $row, $data['cantidad']);
+        $row++;
     }
 
-    // Cerrar el puntero de archivo
-    fclose($output);
+    // Configurar el tipo de contenido y el nombre del archivo
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment;filename="detalle_proyecto.xlsx"');
+    header('Cache-Control: max-age=0');
+
+    // Salida del archivo
+    $writer = new Xlsx($spreadsheet);
+    $writer->save('php://output');
 
     // Cerrar el statement y la conexión
     $stmt->close();
