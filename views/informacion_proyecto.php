@@ -79,14 +79,14 @@ if (!empty($idProyecto)) {
             <div class="container d-flex justify-content-evenly">
                 <a href="home.php" class="btn btn-warning">Volver</a>
                 <!-- Enlace para dirigir al usuario a la página de edición con el ID del proyecto -->
-                <a href="editar_proyecto.php?id=<?php echo $proyecto['id']; ?>" class="btn btn-primary">Editar Información</a>
+                <!-- <a href="editar_proyecto.php?id=<?php echo $proyecto['id']; ?>" class="btn btn-primary">Editar Información</a> -->
                 <a href="materiales.php?id=<?php echo $idProyecto; ?>" class="btn btn-dark">Ver Lista de Materiales</a>
-                <a href="new_material.php?id=<?php echo $idProyecto; ?>" class="btn btn-info">Agregar Material que falta</a>
+                <!-- <a href="new_material.php?id=<?php echo $idProyecto; ?>" class="btn btn-info">Agregar Material que falta</a> -->
                 <a href="generar_pdf.php?id=<?php echo $idProyecto; ?>&nombre_proyecto=<?php echo urlencode($proyecto['nombre']); ?>" class="btn btn-danger" target="_blank">Generar PDF</a>
 
                 <form action="generar_exel.php" method="post" style="display:inline;">
                     <input type="hidden" name="id_proyecto" value="<?php echo $idProyecto; ?>">
-                    <button type="submit" class="btn btn-success">Generar CSV</button>
+                    <button type="submit" class="btn btn-success">Generar EXCEL</button>
                 </form>
             </div>
             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">

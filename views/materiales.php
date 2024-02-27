@@ -59,6 +59,8 @@ if ($idProyecto) {
 
         <a href="<?php echo isset($_GET['id']) ? 'informacion_proyecto.php?id=' . $_GET['id'] : 'informacion_proyecto.php'; ?>" class="btn btn-warning m-2">Volver</a>
 
+        <!-- <a href="new_material.php?id=<?php echo $idProyecto; ?>" class="btn btn-info">Agregar Material que falta</a> -->
+
 
         <form action="" method="POST" class="d-flex flex-column">
             <!-- Input oculto para pasar el ID del proyecto -->
@@ -69,6 +71,7 @@ if ($idProyecto) {
             <div class="form-group mt-3">
                 <!-- Contenedor para la lista de materiales -->
                 <?php
+                $mostrarEnlace = true;
                 // Consulta SQL para obtener los materiales que coinciden con el término de búsqueda
                 $sql = "SELECT * FROM Materiales WHERE nombre LIKE ?";
                 $stmt = $conn->prepare($sql);
@@ -79,9 +82,10 @@ if ($idProyecto) {
 
                 $stmt->execute();
                 $result = $stmt->get_result();
-
                 // Verificar si se encontraron materiales
                 if ($result->num_rows > 0) {
+                    $mostrarEnlace = false;
+
                     // Mostrar los materiales con checkboxes
                     while ($row = $result->fetch_assoc()) {
                         // Verificar si este material está seleccionado
@@ -100,6 +104,10 @@ if ($idProyecto) {
                     }
                 } else {
                     echo "No se encontraron materiales.";
+                }
+                // Mostrar el enlace si la variable $mostrarEnlace es verdadera
+                if ($mostrarEnlace) {
+                    echo '<a href="new_material.php?id=' . $idProyecto . '" class="btn btn-info">Agregar Material que falta</a>';
                 }
                 ?>
             </div>
