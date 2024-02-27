@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         echo "Se ha guardado la cantidad correctamente.";
-        header("Location: home.php");
+        header("Location: home.php?mensaje=Se+ha+guardado+correctamente+ahora+puede+generar+el+PDF.&tipo=success");
     } else {
         echo "No se proporcionó un ID de proyecto válido o cantidad.";
     }

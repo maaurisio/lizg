@@ -32,8 +32,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Se genero completamente";
         header("Location: informacion_proyecto.php?id=$idProyecto"); // Redirige con el ID del proyecto
         exit; // Detiene la ejecución del script después de la redirección
-    } else {
-        echo "No se proporcionaron materiales seleccionados o no se proporcionó un ID de proyecto válido.";
     }
 }
 
@@ -66,7 +64,7 @@ if ($idProyecto) {
             <!-- Input oculto para pasar el ID del proyecto -->
             <input type="hidden" name="idProyecto" value="<?php echo $idProyecto; ?>">
             <div class="mt-auto">
-                <button type="submit" class="btn btn-primary" onclick="limpiarLocalStorage()">Guardar Selección</button>
+                <button type="submit" class="btn btn-primary" id="guardarSeleccion" onclick="limpiarLocalStorage()" disabled>Guardar Selección</button>
             </div>
             <div class="form-group mt-3">
                 <!-- Contenedor para la lista de materiales -->
@@ -109,18 +107,16 @@ if ($idProyecto) {
 
         <script>
             function limpiarLocalStorage() {
-                localStorage.removeItem('selectedMaterials_' + <?php echo $idProyecto; ?>);
+                localStorage.removeItem('selectedMaterials_<?php echo $idProyecto; ?>');
             }
         </script>
 
 
     </div>
     <script>
-        // Espera a que el DOM esté completamente cargado
         document.addEventListener("DOMContentLoaded", function() {
             // Obtiene los materiales seleccionados almacenados en el local storage
             var selectedMaterials = JSON.parse(localStorage.getItem('selectedMaterials_' + <?php echo $idProyecto; ?>)) || [];
-
 
             // Recorre los materiales seleccionados y marca los checkbox correspondientes
             selectedMaterials.forEach(function(material) {
@@ -129,6 +125,9 @@ if ($idProyecto) {
                     checkbox.checked = true;
                 }
             });
+
+            // Verificar si hay algún checkbox marcado al cargar la página
+            verificarSeleccion();
 
             // Escucha los eventos de cambio en los checkbox
             var checkboxes = document.querySelectorAll('input[name="materiales[]"]');
@@ -146,9 +145,22 @@ if ($idProyecto) {
                     }
 
                     // Guarda los materiales seleccionados en el local storage
-                    localStorage.setItem('selectedMaterials', JSON.stringify(selectedMaterials));
+                    localStorage.setItem('selectedMaterials_' + <?php echo $idProyecto; ?>, JSON.stringify(selectedMaterials));
+
+                    // Verificar si hay algún checkbox marcado al cambiar su estado
+                    verificarSeleccion();
                 });
             });
+
+            // Función para verificar si hay algún checkbox marcado y habilitar/deshabilitar el botón "Guardar Selección"
+            function verificarSeleccion() {
+                var checkboxes = document.querySelectorAll('input[name="materiales[]"]');
+                var botonGuardar = document.getElementById('guardarSeleccion');
+                var algunSeleccionado = Array.from(checkboxes).some(function(checkbox) {
+                    return checkbox.checked;
+                });
+                botonGuardar.disabled = !algunSeleccionado;
+            }
         });
     </script>
 </body>

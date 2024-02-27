@@ -30,6 +30,8 @@ if ($rol === 'admin') {
 
 $stmt->execute();
 $result = $stmt->get_result();
+
+
 ?>
 
 <body class="d-flex flex-column h-100">
@@ -51,6 +53,21 @@ $result = $stmt->get_result();
             unset($_SESSION['color']);
             unset($_SESSION['msg']);
         } ?>
+
+        <?php
+        // Recuperar el mensaje y el tipo de alerta de la URL
+        $mensaje = isset($_GET['mensaje']) ? $_GET['mensaje'] : "";
+        $tipo = isset($_GET['tipo']) ? $_GET['tipo'] : "";
+
+        // Mostrar la alerta si hay un mensaje y un tipo de alerta válidos
+        if (!empty($mensaje) && !empty($tipo)) {
+            echo "<div class='alert alert-$tipo alert-dismissible fade show' role='alert'>
+            $mensaje
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+          </div>";
+        }
+        ?>
+
 
         <div class="row justify-content-end">
 

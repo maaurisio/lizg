@@ -23,12 +23,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt->bind_param("ssi", $nombre, $descripcion, $idUsuario);
 
-    //Ejecutar la consulta
     if ($stmt->execute()) {
-        header("Location: home.php");
+        // Redireccionar al usuario a la página de inicio con un mensaje de éxito
+        header("Location: home.php?mensaje=¡Proyecto creado con éxito!&tipo=success");
         exit;
     } else {
-        echo "Error al crear el proyecto";
+        // Redireccionar al usuario a la página de inicio con un mensaje de error
+        header("Location: home.php?mensaje=Error al crear el proyecto.&tipo=danger");
+        exit;
     }
 }
 ?>
