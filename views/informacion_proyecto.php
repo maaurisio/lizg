@@ -124,7 +124,7 @@ if (!empty($idProyecto)) {
                                     <td><?php echo $nombre; ?></td>
                                     <td>
                                         <!-- Campo de entrada para la cantidad -->
-                                        <input type='number' autofocus name='cantidad_<?php echo $codigo; ?>' class='form-control' value='<?php echo $cantidad_detalle; ?>' <?php echo $readonly; ?> required>
+                                        <input type='number' min="0" autofocus name='cantidad_<?php echo $codigo; ?>' class='form-control' value='<?php echo $cantidad_detalle; ?>' <?php echo $readonly; ?> required>
                                     </td>
                                     <td>
                                         <a href="eliminar_material.php?codigo=<?php echo $codigo; ?>&idProyecto=<?php echo $idProyecto; ?>" class="btn btn-danger">Eliminar</a>
