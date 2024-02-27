@@ -1,4 +1,6 @@
-<?php
+ESTE YA NO SE USA PORQUE YA LO MANEJA DESDE EL MISMO ARCHIVO informacion_proyecto.php
+
+<!-- 
 // Incluir el archivo de configuración de la base de datos
 include "../config/database.php";
 
@@ -29,10 +31,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         echo "Se ha guardado la cantidad correctamente.";
-        header("Location: home.php?mensaje=Se+ha+guardado+correctamente+ahora+puede+generar+el+PDF.&tipo=success");
+        // Redireccionar de nuevo a la misma página
+        header("Location: {$_SERVER['PHP_SELF']}");
+        exit; // Terminar el script después de la redirección
     } else {
         echo "No se proporcionó un ID de proyecto válido o cantidad.";
     }
 } else {
     echo "La solicitud no es válida.";
-}
+} -->

@@ -101,7 +101,7 @@ $result = $stmt->get_result();
                                 echo "<td>" . $row['id'] . "</td>";
                                 echo "<td>" . $row['nombre_proyecto'] . "</td>";
                                 echo "<td>" . $row['nombre_tecnico'] . "</td>";
-                                echo "<td><a href='informacion_proyecto.php?id=" . $row['id'] . "' class='btn btn-success btn-sm'>Ver</a></td>";
+                                echo "<td><a href='informacion_proyecto.php?id=" . $row['id'] . "' class='btn btn-success'>Visualizar</a></td>";
                                 echo "</tr>";
                             }
                         } else {
