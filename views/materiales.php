@@ -106,7 +106,7 @@ if ($idProyecto) {
 
                     // Mostrar los materiales con checkboxes
                     while ($row = $result->fetch_assoc()) {
-                        // Verificar si este material está seleccionado
+                        // Verificar si este material está seleccionadoz
                         $checked = '';
                         if (isset($_SESSION['selectedMaterials']) && in_array($row['codigo'], $_SESSION['selectedMaterials'])) {
                             $checked = 'checked';
