@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre_material = $_POST['nombre_material'];
 
     // Generar un código único combinando una marca de tiempo y una cadena aleatoria
-    $codigo = uniqid() . '-' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 6);
+    $codigo = hash('crc32', uniqid() . '-' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 6));
 
     $stmt = $conn->prepare("INSERT INTO materiales (codigo, nombre, codigocero) VALUES (?, ?, '')");
     $stmt->bind_param("ss", $codigo, $nombre_material);
