@@ -14,7 +14,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     $idProyecto = $_GET['id'];
 
     // Consulta SQL para obtener los datos del proyecto
-    $sql = "SELECT * FROM Proyecto WHERE id = ?";
+    $sql = "SELECT * FROM psroyecto WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $idProyecto);
     $stmt->execute();
@@ -32,7 +32,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
             $descripcion = $_POST["descripcion"];
 
             // Consulta SQL para actualizar la información del proyecto
-            $sql = "UPDATE Proyecto SET nombre = ?, descripcion = ? WHERE id = ?";
+            $sql = "UPDATE proyecto SET nombre = ?, descripcion = ? WHERE id = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ssi", $nombre, $descripcion, $idProyecto);
             if ($stmt->execute()) {
@@ -72,7 +72,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                         </div>
                         <div class="mt-3">
                             <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                            <a href="home.php" class="btn btn-warning">Volver</a>
+                            <a href="<?php echo isset($_GET['id']) ? 'informacion_proyecto.php?id=' . $_GET['id'] : 'informacion_proyecto.php'; ?>" class="btn btn-warning m-2">Volver</a>
                         </div>
 
                     </form>

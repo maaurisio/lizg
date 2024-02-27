@@ -9,17 +9,29 @@ $nombre = $_SESSION['nombre'];
 $rol = $_SESSION['rol']; // Obtener el rol del usuario de la sesión
 $idUsuario = $_SESSION['id_usuario']; //Obtener el id del usuario
 
+// Realizar la consulta para obtener los proyectos
+if ($rol === 'admin') {
+    // Si el usuario es un administrador, seleccionar todos los proyectos
+    $sql = "SELECT p.id, p.nombre AS nombre_proyecto, u.nombre AS nombre_tecnico 
+            FROM proyecto p 
+            INNER JOIN usuarios u ON p.usuario_id = u.id 
+            ORDER BY p.id DESC";
+    $stmt = $conn->prepare($sql);
+} else {
+    // Si el usuario es un usuario normal, seleccionar solo los proyectos asociados a su ID de usuario
+    $sql = "SELECT p.id, p.nombre AS nombre_proyecto, u.nombre AS nombre_tecnico 
+            FROM proyecto p 
+            INNER JOIN usuarios u ON p.usuario_id = u.id 
+            WHERE p.usuario_id = ? 
+            ORDER BY p.id DESC";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $idUsuario);
+}
 
-// Realizar la consulta para obtener los proyectos del usuario actual con el nombre del técnico
-$sql = "SELECT p.id, p.nombre AS nombre_proyecto, u.nombre AS nombre_tecnico 
-        FROM proyecto p 
-        INNER JOIN usuarios u ON p.usuario_id = u.id 
-        WHERE p.usuario_id = ? 
-        ORDER BY p.id DESC";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $idUsuario);
 $stmt->execute();
 $result = $stmt->get_result();
+
+
 ?>
 
 <body class="d-flex flex-column h-100">
@@ -41,6 +53,21 @@ $result = $stmt->get_result();
             unset($_SESSION['color']);
             unset($_SESSION['msg']);
         } ?>
+
+        <?php
+        // Recuperar el mensaje y el tipo de alerta de la URL
+        $mensaje = isset($_GET['mensaje']) ? $_GET['mensaje'] : "";
+        $tipo = isset($_GET['tipo']) ? $_GET['tipo'] : "";
+
+        // Mostrar la alerta si hay un mensaje y un tipo de alerta válidos
+        if (!empty($mensaje) && !empty($tipo)) {
+            echo "<div class='alert alert-$tipo alert-dismissible fade show' role='alert'>
+            $mensaje
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+          </div>";
+        }
+        ?>
+
 
         <div class="row justify-content-end">
 
