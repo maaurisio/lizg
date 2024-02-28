@@ -34,12 +34,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
-        // Insertar los datos en la nueva tabla de la base de datos
+        // Insertar o actualizar los datos en la tabla de la base de datos
         foreach ($materiales as $codigoMaterial => $cantidad) {
-            $sql = "INSERT INTO detalle (idProyecto, codigoMaterial, cantidad) VALUES (?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("isi", $idProyecto, $codigoMaterial, $cantidad);
-            $stmt->execute();
+            // Consultar la cantidad actual en la base de datos
+            $sql_select = "SELECT cantidad FROM detalle WHERE idProyecto = ? AND codigoMaterial = ?";
+            $stmt_select = $conn->prepare($sql_select);
+            $stmt_select->bind_param("is", $idProyecto, $codigoMaterial);
+            $stmt_select->execute();
+            $result_select = $stmt_select->get_result();
+
+            if ($result_select->num_rows > 0) {
+                // Si hay una fila, la cantidad ya existe en la base de datos, entonces actualizamos
+                $row_select = $result_select->fetch_assoc();
+                $cantidadActual = $row_select['cantidad'];
+                if ($cantidad != $cantidadActual) {
+                    // Si la cantidad es diferente, actualizamos
+                    $sql_update = "UPDATE detalle SET cantidad = ? WHERE idProyecto = ? AND codigoMaterial = ?";
+                    $stmt_update = $conn->prepare($sql_update);
+                    $stmt_update->bind_param("isi", $cantidad, $idProyecto, $codigoMaterial);
+                    $stmt_update->execute();
+                }
+            } else {
+                // Si no hay fila, la cantidad no existe en la base de datos, entonces insertamos
+                $sql_insert = "INSERT INTO detalle (idProyecto, codigoMaterial, cantidad) VALUES (?, ?, ?)";
+                $stmt_insert = $conn->prepare($sql_insert);
+                $stmt_insert->bind_param("isi", $idProyecto, $codigoMaterial, $cantidad);
+                $stmt_insert->execute();
+            }
         }
 
         // Marcar como guardado
@@ -54,6 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $tipoMensaje = 'error';
     }
 }
+
 
 // Consultar información del proyecto
 if (!empty($idProyecto)) {
