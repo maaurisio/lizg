@@ -45,9 +45,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Marcar como guardado
         $guardado = true;
 
-        header("Location: home.php?mensaje=¡Se guardó correctamente ahora puede generar el PDF!&tipo=success");
+        // Mostrar mensaje de éxito
+        echo '<script>alert("¡Se guardó correctamente ahora puede generar el PDF!");</script>';
         $readonly = 'readonly';
-        exit;
     } else {
         $readonly = '';
         $mensaje = "No se proporcionó un ID de proyecto válido o cantidad.";
@@ -65,6 +65,24 @@ if (!empty($idProyecto)) {
 
     if ($result_proyecto->num_rows > 0) {
         $proyecto = $result_proyecto->fetch_assoc();
+
+        // Definir la variable $num_materiales y establecerla en 0 inicialmente
+        $num_materiales = 0;
+
+        // Consultar los materiales asociados al proyecto
+        $sql_materiales = "SELECT m.codigo, m.nombre, d.cantidad AS cantidad_detalle 
+                           FROM materiales m 
+                           INNER JOIN materialesproyecto mp ON m.codigo = mp.codigoMaterial 
+                           LEFT JOIN detalle d ON m.codigo = d.codigoMaterial AND d.idProyecto = ?
+                           WHERE mp.idProyecto = ?";
+
+        $stmt_materiales = $conn->prepare($sql_materiales);
+        $stmt_materiales->bind_param("ii", $idProyecto, $idProyecto);
+        $stmt_materiales->execute();
+        $result_materiales = $stmt_materiales->get_result();
+
+        // Contar el número de materiales obtenidos
+        $num_materiales = $result_materiales->num_rows;
 ?>
 
         <body class="d-flex flex-column h-100">
@@ -78,16 +96,23 @@ if (!empty($idProyecto)) {
             </div>
             <div class="container d-flex justify-content-evenly">
                 <a href="home.php" class="btn btn-warning">Volver</a>
-                <!-- Enlace para dirigir al usuario a la página de edición con el ID del proyecto -->
-                <!-- <a href="editar_proyecto.php?id=<?php echo $proyecto['id']; ?>" class="btn btn-primary">Editar Información</a> -->
                 <a href="materiales.php?id=<?php echo $idProyecto; ?>" class="btn btn-dark">Ver Lista de Materiales</a>
-                <!-- <a href="new_material.php?id=<?php echo $idProyecto; ?>" class="btn btn-info">Agregar Material que falta</a> -->
-                <a href="generar_pdf.php?id=<?php echo $idProyecto; ?>&nombre_proyecto=<?php echo urlencode($proyecto['nombre']); ?>" class="btn btn-danger" target="_blank">Generar PDF</a>
 
-                <form action="generar_exel.php" method="post" style="display:inline;">
-                    <input type="hidden" name="id_proyecto" value="<?php echo $idProyecto; ?>">
-                    <button type="submit" class="btn btn-success">Generar EXCEL</button>
-                </form>
+                <?php
+                // Verificar si hay materiales para habilitar o deshabilitar los botones
+                if ($num_materiales > 0) {
+                    echo '<a href="generar_pdf.php?id=' . $idProyecto . '&nombre_proyecto=' . urlencode($proyecto["nombre"]) . '" class="btn btn-danger" target="_blank">Generar PDF</a>';
+
+                    echo '<form action="generar_exel.php" method="post" style="display:inline;">';
+                    echo '<input type="hidden" name="id_proyecto" value="' . $idProyecto . '">';
+                    echo '<button type="submit" class="btn btn-success">Generar EXCEL</button>';
+                    echo '</form>';
+                } else {
+                    echo '<button class="btn btn-danger" disabled>Generar PDF</button>';
+                    echo '<button class="btn btn-success" disabled>Generar EXCEL</button>';
+                }
+                ?>
+
             </div>
             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                 <input type="hidden" name="idProyecto" value="<?php echo $idProyecto; ?>">
@@ -102,21 +127,6 @@ if (!empty($idProyecto)) {
                     </thead>
                     <tbody>
                         <?php
-                        // Consulta SQL para obtener los materiales asociados al proyecto actual
-                        $sql_materiales = "SELECT m.codigo, m.nombre, d.cantidad AS cantidad_detalle 
-                    FROM materiales m 
-                    INNER JOIN materialesproyecto mp ON m.codigo = mp.codigoMaterial 
-                    LEFT JOIN detalle d ON m.codigo = d.codigoMaterial AND d.idProyecto = ?
-                    WHERE mp.idProyecto = ?";
-
-                        $stmt_materiales = $conn->prepare($sql_materiales);
-                        $stmt_materiales->bind_param("ii", $idProyecto, $idProyecto);
-                        $stmt_materiales->execute();
-                        $result_materiales = $stmt_materiales->get_result();
-
-                        // Variable para contar el número de materiales
-                        $num_materiales = $result_materiales->num_rows;
-
                         // Verificar si se encontraron materiales asociados al proyecto
                         if ($num_materiales > 0) {
                             // Mostrar los materiales en la tabla
@@ -134,14 +144,14 @@ if (!empty($idProyecto)) {
                                     </td>
                                     <td>
                                         <?php
-                                        // Si se ha guardado, mostrar los botones de editar y eliminar
+                                        // Si se ha guardado, mostrar el botón de "Editar"
                                         if ($guardado) {
-                                            echo '<a href="eliminar_material.php?codigo=<?php echo $codigo; ?>&idProyecto=<?php echo $idProyecto; ?>" class="btn btn-danger">Eliminar</a>';
                                             echo '<button type="button" class="btn btn-warning editar-cantidad">Editar</button>';
                                         }
                                         ?>
                                     </td>
                                 </tr>
+
                         <?php
                             }
                         } else {
