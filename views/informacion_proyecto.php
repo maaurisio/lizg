@@ -169,6 +169,7 @@ if (!empty($idProyecto)) {
                             // Verificar si se encontraron materiales asociados al proyecto
                             if ($num_materiales > 0) {
                                 // Mostrar los materiales en la tabla
+                                // Mostrar los materiales en la tabla
                                 while ($row = $result_materiales->fetch_assoc()) {
                                     $codigo = stripslashes($row['codigo']);
                                     $nombre = stripslashes($row['nombre']);
@@ -182,12 +183,8 @@ if (!empty($idProyecto)) {
                                             <input type='number' min="0" autofocus name='cantidad_<?php echo $codigo; ?>' class='form-control' value='<?php echo $cantidad_detalle; ?>' <?php echo $readonly; ?> required>
                                         </td>
                                         <td>
-                                            <?php
-                                            // Si se ha guardado, mostrar el botón de "Editar"
-                                            if ($guardado) {
-                                                echo '<button type="button" class="btn btn-warning editar-cantidad" data-codigo="' . $codigo . '">Editar</button>';
-                                            }
-                                            ?>
+                                            <!-- Siempre mostrar el botón de "Editar" -->
+                                            <button type="button" class="btn btn-warning editar-cantidad" data-codigo="<?php echo $codigo; ?>">Editar</button>
                                         </td>
                                     </tr>
 
@@ -235,12 +232,16 @@ if (!empty($idProyecto)) {
             });
         });
 
-        // Bloquear los campos de cantidad que ya tienen información
+        // Bloquear los campos de cantidad que ya tienen información y mostrar el botón "Editar"
+        // Bloquear los campos de cantidad que ya tienen información y mostrar el botón "Editar"
         document.addEventListener("DOMContentLoaded", function() {
             const inputsCantidad = document.querySelectorAll('input[name^="cantidad_"]');
             inputsCantidad.forEach(input => {
                 if (input.value !== '') {
                     input.setAttribute('readonly', 'readonly');
+                    const codigoMaterial = input.getAttribute('name').replace('cantidad_', '');
+                    const botonEditar = document.querySelector('.editar-cantidad[data-codigo="' + codigoMaterial + '"]');
+                    botonEditar.style.display = 'inline'; // Mostrar el botón "Editar"
                 }
             });
         });
