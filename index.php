@@ -32,62 +32,108 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-require "config/partials/header.php";
+
 ?>
+<!DOCTYPE html>
+<html lang="en">
 
-<body class="bg-primary">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Redinco</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <style>
-        .redinco {
-            font-size: 500;
-            border-bottom: 2px solid #1C3969;
-        }
-
         body {
             background-image: url('images/fondo-negro.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 350px;
+            max-width: 100%;
+            margin: auto;
+        }
+
+        .card-img-top {
+            width: 50%;
+            margin: auto;
+            padding-top: 20px;
+        }
+
+        .card-header {
+            background-color: transparent;
+            border-bottom: none;
+            text-align: center;
+            padding-bottom: 0;
+        }
+
+        .card-body {
+            padding: 40px;
+        }
+
+        .btn-primary {
+            background-color: #1C3969;
+            border-color: #1C3969;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #143257;
+            border-color: #143257;
+        }
+
+        .form-control,
+        .btn {
+            border-radius: 20px;
         }
     </style>
-    <div id="layoutAuthentication">
-        <div id="layoutAuthentication_content">
-            <main>
-                <div class="container h-100">
-                    <div class="row h-100 justify-content-center align-items-center">
-                        <div class="col-lg-5">
-                            <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                <div class="row justify-content-center"><img src="images/logo.png" width="250"></div>
-                                <div class="card-body">
-                                    <h3 class="text-center font-weight-light my-4">Bienvenido a <span class="redinco">Redinco</span></h3>
-                                    <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                                        <div class="form-group">
-                                            <label class="small mb-1" for="inputUsuario">Usuario</label>
-                                            <input class="form-control form-control-sm py-3" id="inputUsuario" name="usuario" type="text" placeholder="Enter username" autofocus />
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="small mb-1" for="inputPassword">Contraseña</label>
-                                            <input class="form-control form-control-sm py-3" id="inputPassword" name="password" type="password" placeholder="Enter password" />
-                                        </div>
-                                        <div class="form-group d-flex align-items-center justify-content-center mt-4 mb-0">
-                                            <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
-                                        </div>
-                                        <?php if (isset($error_msg)) : ?>
-                                            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                                                <?php echo $error_msg; ?>
-                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                        <?php endif; ?>
-                                    </form>
-                                </div>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card">
+                    <img class="card-img-top" src="images/logo.png" alt="Logo">
+                    <div class="card-header">
+                        <h3 class="font-weight-light">Aplicativo de <span style="color: #1C3969;">Materiales</span></h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+                            <div class="form-group">
+                                <input class="form-control py-4" id="inputUsuario" name="usuario" type="text" placeholder="Usuario" autofocus required>
                             </div>
-                        </div>
+                            <div class="form-group">
+                                <input class="form-control py-4" id="inputPassword" name="password" type="password" placeholder="Contraseña" required>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
+                            </div>
+                            <?php if (isset($error_msg)) : ?>
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <?php echo $error_msg; ?>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            <?php endif; ?>
+                        </form>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="js/scripts.js"></script>
 </body>
 
 </html>
