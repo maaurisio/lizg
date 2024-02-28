@@ -108,30 +108,46 @@ if (!empty($idProyecto)) {
 ?>
 
         <body class="d-flex flex-column h-100">
+            <style>
+                /* Estilos específicos para dispositivos de escritorio */
+                @media (min-width: 768px) {
+                    /* Personaliza los estilos aquí */
+                }
+
+                /* Estilos específicos para dispositivos móviles */
+                @media (max-width: 767px) {
+
+                    /* Ajustar el estilo del contenedor de botones para dispositivos móviles */
+                    .contenedor-botones {
+                        flex-direction: column;
+                        align-items: center;
+                    }
+                }
+            </style>
             <img src="<?php echo $url ?>images/encabezadoactual.png" width="700">
-            <div class="container d-flex justify-content-center align-item-center mb-5">
+            <div class="container container-fluid d-flex justify-content-center align-item-center mb-5">
                 <div class="border border-success border-3 p-3 mb-2 rounded mt-2">
                     <h1>Información del Proyecto</h1>
                     <p><strong>Nombre del Proyecto:</strong> <?php echo $proyecto['nombre']; ?></p>
                     <p><strong>Descripción del Proyecto:</strong> <?php echo $proyecto['descripcion']; ?></p>
                 </div>
             </div>
-            <div class="container d-flex justify-content-evenly">
-                <a href="home.php" class="btn btn-warning">Volver</a>
-                <a href="materiales.php?id=<?php echo $idProyecto; ?>" class="btn btn-dark">Ver Lista de Materiales</a>
+            <div class="container container-fluid d-flex justify-content-evenly contenedor-botones">
+                <a href="home.php" class="btn btn-warning mb-2">Volver</a>
+                <a href="materiales.php?id=<?php echo $idProyecto; ?>" class="btn btn-dark mb-2">Ver Lista de Materiales</a>
 
                 <?php
                 // Verificar si hay materiales para habilitar o deshabilitar los botones
                 if ($num_materiales > 0) {
-                    echo '<a href="generar_pdf.php?id=' . $idProyecto . '&nombre_proyecto=' . urlencode($proyecto["nombre"]) . '" class="btn btn-danger" target="_blank">Generar PDF</a>';
+                    echo '<a href="generar_pdf.php?id=' . $idProyecto . '&nombre_proyecto=' . urlencode($proyecto["nombre"]) . '" class="btn btn-danger mb-2" target="_blank">Generar PDF</a>';
 
-                    echo '<form action="generar_exel.php" method="post" style="display:inline;">';
+                    echo '<form action="generar_exel.php" method="post">';
                     echo '<input type="hidden" name="id_proyecto" value="' . $idProyecto . '">';
-                    echo '<button type="submit" class="btn btn-success">Generar EXCEL</button>';
+                    echo '<button type="submit" class="btn btn-success mb-2">Generar EXCEL</button>';
                     echo '</form>';
                 } else {
-                    echo '<button class="btn btn-danger" disabled>Generar PDF</button>';
-                    echo '<button class="btn btn-success" disabled>Generar EXCEL</button>';
+                    echo '<button class="btn btn-danger mb-2" disabled>Generar PDF</button>';
+                    echo '<button class="btn btn-success mb-2" disabled>Generar EXCEL</button>';
                 }
                 ?>
 
@@ -186,7 +202,7 @@ if (!empty($idProyecto)) {
                 </div>
                 <div class="text-center">
                     <?php
-                    // Si no hay materiales, deshabilitar el botón Guardar
+                    // Si no hay materiales, deFshabilitar el botón Guardar
                     if ($num_materiales == 0) {
                         echo '<button type="submit" class="btn btn-primary my-2" disabled>Guardar</button>';
                     } else {
@@ -195,26 +211,28 @@ if (!empty($idProyecto)) {
                     ?>
                 </div>
             </form>
-        </body>
 
-        </html>
-<?php
+
+    <?php
     } else {
         echo "<p>No se encontró el proyecto.</p>";
     }
 } else {
     echo "<p>No se proporcionó un ID de proyecto válido.</p>";
 }
-?>
-<script>
-    // Script JavaScript para cambiar entre solo lectura y editable al hacer clic en "Editar"
-    const botonesEditar = document.querySelectorAll('.editar-cantidad');
-    botonesEditar.forEach(boton => {
-        boton.addEventListener('click', function() {
-            const codigoMaterial = this.getAttribute('data-codigo');
-            const inputCantidad = document.querySelector('input[name="cantidad_' + codigoMaterial + '"]');
-            inputCantidad.removeAttribute('readonly');
-            inputCantidad.focus(); // Opcional: enfocar el campo automáticamente al hacer clic en "Editar"
+    ?>
+    <script>
+        // Script JavaScript para cambiar entre solo lectura y editable al hacer clic en "Editar"
+        const botonesEditar = document.querySelectorAll('.editar-cantidad');
+        botonesEditar.forEach(boton => {
+            boton.addEventListener('click', function() {
+                const codigoMaterial = this.getAttribute('data-codigo');
+                const inputCantidad = document.querySelector('input[name="cantidad_' + codigoMaterial + '"]');
+                inputCantidad.removeAttribute('readonly');
+                inputCantidad.focus(); // Opcional: enfocar el campo automáticamente al hacer clic en "Editar"
+            });
         });
-    });
-</script>
+    </script>
+        </body>
+
+        </html>
