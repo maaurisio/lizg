@@ -138,50 +138,52 @@ if (!empty($idProyecto)) {
             </div>
             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
                 <input type="hidden" name="idProyecto" value="<?php echo $idProyecto; ?>">
-                <table class="table table-sm table-striped table-hover mt-4 container">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Codigo</th>
-                            <th>Material</th>
-                            <th>Cantidad</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        // Verificar si se encontraron materiales asociados al proyecto
-                        if ($num_materiales > 0) {
-                            // Mostrar los materiales en la tabla
-                            while ($row = $result_materiales->fetch_assoc()) {
-                                $codigo = stripslashes($row['codigo']);
-                                $nombre = stripslashes($row['nombre']);
-                                $cantidad_detalle = $row['cantidad_detalle'];
-                        ?>
-                                <tr>
-                                    <td><?php echo $codigo; ?></td>
-                                    <td><?php echo $nombre; ?></td>
-                                    <td>
-                                        <!-- Campo de entrada para la cantidad -->
-                                        <input type='number' min="0" autofocus name='cantidad_<?php echo $codigo; ?>' class='form-control' value='<?php echo $cantidad_detalle; ?>' <?php echo $readonly; ?> required>
-                                    </td>
-                                    <td>
-                                        <?php
-                                        // Si se ha guardado, mostrar el botón de "Editar"
-                                        if ($guardado) {
-                                            echo '<button type="button" class="btn btn-warning editar-cantidad" data-codigo="' . $codigo . '">Editar</button>';
-                                        }
-                                        ?>
-                                    </td>
-                                </tr>
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped table-hover mt-4 container">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">Codigo</th>
+                                <th scope="col">Material</th>
+                                <th scope="col">Cantidad</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Verificar si se encontraron materiales asociados al proyecto
+                            if ($num_materiales > 0) {
+                                // Mostrar los materiales en la tabla
+                                while ($row = $result_materiales->fetch_assoc()) {
+                                    $codigo = stripslashes($row['codigo']);
+                                    $nombre = stripslashes($row['nombre']);
+                                    $cantidad_detalle = $row['cantidad_detalle'];
+                            ?>
+                                    <tr>
+                                        <td><?php echo $codigo; ?></td>
+                                        <td><?php echo $nombre; ?></td>
+                                        <td>
+                                            <!-- Campo de entrada para la cantidad -->
+                                            <input type='number' min="0" autofocus name='cantidad_<?php echo $codigo; ?>' class='form-control' value='<?php echo $cantidad_detalle; ?>' <?php echo $readonly; ?> required>
+                                        </td>
+                                        <td>
+                                            <?php
+                                            // Si se ha guardado, mostrar el botón de "Editar"
+                                            if ($guardado) {
+                                                echo '<button type="button" class="btn btn-warning editar-cantidad" data-codigo="' . $codigo . '">Editar</button>';
+                                            }
+                                            ?>
+                                        </td>
+                                    </tr>
 
-                        <?php
+                            <?php
+                                }
+                            } else {
+                                echo "<tr><td colspan='4'>No hay materiales asociados a este proyecto.</td></tr>";
                             }
-                        } else {
-                            echo "<tr><td colspan='4'>No hay materiales asociados a este proyecto.</td></tr>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="text-center">
                     <?php
                     // Si no hay materiales, deshabilitar el botón Guardar
@@ -194,6 +196,8 @@ if (!empty($idProyecto)) {
                 </div>
             </form>
         </body>
+
+        </html>
 <?php
     } else {
         echo "<p>No se encontró el proyecto.</p>";
