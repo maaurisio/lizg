@@ -1,4 +1,3 @@
-
 <?php
 // Incluir el archivo de configuración de la base de datos
 include "../config/database.php";
@@ -20,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Verificar si el término de búsqueda tiene al menos 4 letras
     if (strlen($busqueda) >= 4) {
         // Realizar la búsqueda en la base de datos y mostrar los resultados
-        $sql = "SELECT * FROM Materiales WHERE nombre LIKE ?";
+        $sql = "SELECT * FROM materiales WHERE nombre LIKE ?";
         $stmt = $conn->prepare($sql);
         $param_busqueda = "%" . $busqueda . "%";
         $stmt->bind_param("s", $param_busqueda);
@@ -91,7 +90,7 @@ if ($idProyecto) {
                 <?php
                 $mostrarEnlace = true;
                 // Consulta SQL para obtener los materiales que coinciden con el término de búsqueda
-                $sql = "SELECT * FROM Materiales WHERE nombre LIKE ?";
+                $sql = "SELECT * FROM materiales WHERE nombre LIKE ?";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("s", $param_busqueda);
 

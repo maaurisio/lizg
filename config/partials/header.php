@@ -1,8 +1,7 @@
 <?php
 
-// $url = "https://tecniredinco.com/";
-$url = "http://localhost/lizg/";
-
+$url = "https://tecniredinco.com/";
+// $url = "http://localhost/lizg/";
 
 ?>
 

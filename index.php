@@ -40,8 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Redinco</title>
+    <title>Redinco</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link rel="icon" type="image/jpg" href="./images/pesta.png" />
+
     <style>
         body {
             background-image: url('images/fondo-negro.jpg');
@@ -61,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 350px;
             max-width: 100%;
             margin: auto;
+            animation: fadeInDown 1s ease;
         }
 
         .card-img-top {
@@ -94,6 +97,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .form-control,
         .btn {
             border-radius: 20px;
+        }
+
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
