@@ -146,7 +146,7 @@ if (!empty($idProyecto)) {
                                         <?php
                                         // Si se ha guardado, mostrar el botón de "Editar"
                                         if ($guardado) {
-                                            echo '<button type="button" class="btn btn-warning editar-cantidad">Editar</button>';
+                                            echo '<button type="button" class="btn btn-warning editar-cantidad" data-codigo="' . $codigo . '">Editar</button>';
                                         }
                                         ?>
                                     </td>
@@ -185,8 +185,8 @@ if (!empty($idProyecto)) {
     const botonesEditar = document.querySelectorAll('.editar-cantidad');
     botonesEditar.forEach(boton => {
         boton.addEventListener('click', function() {
-            const fila = this.closest('tr');
-            const inputCantidad = fila.querySelector('input[type="number"]');
+            const codigoMaterial = this.getAttribute('data-codigo');
+            const inputCantidad = document.querySelector('input[name="cantidad_' + codigoMaterial + '"]');
             inputCantidad.removeAttribute('readonly');
             inputCantidad.focus(); // Opcional: enfocar el campo automáticamente al hacer clic en "Editar"
         });

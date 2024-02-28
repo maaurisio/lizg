@@ -61,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 350px;
             max-width: 100%;
             margin: auto;
+            animation: fadeInDown 1s ease;
         }
 
         .card-img-top {
@@ -94,6 +95,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .form-control,
         .btn {
             border-radius: 20px;
+        }
+
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
