@@ -228,8 +228,20 @@ if (!empty($idProyecto)) {
             boton.addEventListener('click', function() {
                 const codigoMaterial = this.getAttribute('data-codigo');
                 const inputCantidad = document.querySelector('input[name="cantidad_' + codigoMaterial + '"]');
+
+                // Quitar el atributo 'readonly' para permitir la edición
                 inputCantidad.removeAttribute('readonly');
                 inputCantidad.focus(); // Opcional: enfocar el campo automáticamente al hacer clic en "Editar"
+            });
+        });
+
+        // Bloquear los campos de cantidad que ya tienen información
+        document.addEventListener("DOMContentLoaded", function() {
+            const inputsCantidad = document.querySelectorAll('input[name^="cantidad_"]');
+            inputsCantidad.forEach(input => {
+                if (input.value !== '') {
+                    input.setAttribute('readonly', 'readonly');
+                }
             });
         });
     </script>
