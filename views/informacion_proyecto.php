@@ -66,8 +66,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Marcar como guardado
         $guardado = true;
 
-        // Mostrar mensaje de éxito
-        echo '<script>alert("¡Se guardó correctamente ahora puede generar el PDF!");</script>';
+        // Mostrar mensaje de éxito utilizando alerta Bootstrap
+        $tipoMensaje = 'success';
+        $mensaje = '¡Se guardó correctamente ahora puede generar el PDF!';
         $readonly = 'readonly';
     } else {
         $readonly = '';
@@ -132,6 +133,24 @@ if (!empty($idProyecto)) {
                     <p><strong>Descripción del Proyecto:</strong> <?php echo $proyecto['descripcion']; ?></p>
                 </div>
             </div>
+
+
+
+
+            <!-- Código HTML para mostrar la alerta -->
+            <?php if (!empty($mensaje)) : ?>
+                <div class="d-flex justify-content-center"> <!-- Contenedor flexbox -->
+
+                    <div class="alert alert-<?php echo $tipoMensaje; ?> alert-dismissible fade show" role="alert">
+                        <?php echo $mensaje; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+
+
+
             <div class="container container-fluid d-flex justify-content-evenly contenedor-botones">
                 <a href="home.php" class="btn btn-warning mb-2">Volver</a>
                 <a href="materiales.php?id=<?php echo $idProyecto; ?>" class="btn btn-dark mb-2">Ver Lista de Materiales</a>
