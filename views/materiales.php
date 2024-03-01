@@ -20,6 +20,13 @@ $busqueda = "";
 // Variable para almacenar el ID del proyecto
 $idProyecto = isset($_GET['id']) ? $_GET['id'] : null;
 
+// Realizar la consulta SQL para obtener la lista de materiales
+$sql = "SELECT m.*, mp.codigoMaterial AS material_usado FROM materiales m LEFT JOIN materialesproyecto mp ON m.codigo = mp.codigoMaterial AND mp.idProyecto = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $idProyecto);
+$stmt->execute();
+$result = $stmt->get_result();
+
 // Verificar si se envió el formulario de búsqueda
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Obtener el término de búsqueda
@@ -28,17 +35,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Verificar si el término de búsqueda tiene al menos 4 letras
     if (strlen($busqueda) >= 4) {
         // Realizar la búsqueda en la base de datos y mostrar los resultados
-        $sql = "SELECT * FROM materiales WHERE nombre LIKE ?";
+        $sql = "SELECT m.*, mp.codigoMaterial AS material_usado FROM materiales m LEFT JOIN materialesproyecto mp ON m.codigo = mp.codigoMaterial AND mp.idProyecto = ? WHERE m.nombre LIKE ?";
         $stmt = $conn->prepare($sql);
         $param_busqueda = "%" . $busqueda . "%";
-        $stmt->bind_param("s", $param_busqueda);
+        $stmt->bind_param("is", $idProyecto, $param_busqueda);
         $stmt->execute();
         $result = $stmt->get_result();
-
-        // Resto del código para mostrar los resultados de la búsqueda...
     } else {
-        // Mostrar una alerta de JavaScript si el término de búsqueda no cumple con los requisitos
-        echo "<script>alert('El término de búsqueda debe tener al menos 4 letras.');</script>";
+        // Mostrar todos los materiales si el término de búsqueda no cumple con los requisitos
+        $sql = "SELECT m.*, mp.codigoMaterial AS material_usado FROM materiales m LEFT JOIN materialesproyecto mp ON m.codigo = mp.codigoMaterial AND mp.idProyecto = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $idProyecto);
+        $stmt->execute();
+        $result = $stmt->get_result();
     }
 }
 
@@ -85,9 +94,7 @@ if ($idProyecto) {
 
         <a href="<?php echo isset($_GET['id']) ? 'informacion_proyecto.php?id=' . $_GET['id'] : 'informacion_proyecto.php'; ?>" class="btn btn-warning m-2">Volver</a>
 
-        <!-- <a href="new_material.php?id=<?php echo $idProyecto; ?>" class="btn btn-info">Agregar Material que falta</a> -->
-
-
+        <!-- Formulario para mostrar y seleccionar materiales -->
         <form action="" method="POST" class="d-flex flex-column">
             <!-- Input oculto para pasar el ID del proyecto -->
             <input type="hidden" name="idProyecto" value="<?php echo $idProyecto; ?>">
@@ -97,28 +104,12 @@ if ($idProyecto) {
             <div class="form-group mt-3">
                 <!-- Contenedor para la lista de materiales -->
                 <?php
-                $mostrarEnlace = true;
-                // Consulta SQL para obtener los materiales que coinciden con el término de búsqueda
-                $sql = "SELECT * FROM materiales WHERE nombre LIKE ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("s", $param_busqueda);
-
-                // Añadir los comodines '%' al término de búsqueda
-                $param_busqueda = "%" . $busqueda . "%";
-
-                $stmt->execute();
-                $result = $stmt->get_result();
                 // Verificar si se encontraron materiales
-                if ($result->num_rows > 0) {
-                    $mostrarEnlace = false;
-
+                if ($result && $result->num_rows > 0) {
                     // Mostrar los materiales con checkboxes
                     while ($row = $result->fetch_assoc()) {
-                        // Verificar si este material está seleccionadoz
-                        $checked = '';
-                        if (isset($_SESSION['selectedMaterials']) && in_array($row['codigo'], $_SESSION['selectedMaterials'])) {
-                            $checked = 'checked';
-                        }
+                        // Verificar si este material está seleccionado
+                        $checked = $row['material_usado'] ? 'checked' : '';
                 ?>
                         <div class="form-check">
                             <input class="form-check-input border-primary" type="checkbox" name="materiales[]" value="<?php echo $row['codigo']; ?>" <?php echo $checked; ?>>
@@ -130,10 +121,6 @@ if ($idProyecto) {
                     }
                 } else {
                     echo "No se encontraron materiales.";
-                }
-                // Mostrar el enlace si la variable $mostrarEnlace es verdadera
-                if ($mostrarEnlace) {
-                    echo '<a href="new_material.php?id=' . $idProyecto . '" class="btn btn-info">Agregar Material que falta</a>';
                 }
                 ?>
             </div>
