@@ -1,6 +1,15 @@
 <?php
 // Incluir el archivo de configuración de la base de datos
 include "../config/database.php";
+session_start();
+
+$nombre = $_SESSION['nombre'];
+$rol = $_SESSION['rol']; // Obtener el rol del usuario de la sesión
+$idUsuario = $_SESSION['id_usuario']; //Obtener el id del usuario
+
+if (!$idUsuario) {
+    header("Location: ../index.php");
+}
 
 // Verificar si se proporcionó un código de material y un ID de proyecto válidos
 if (isset($_GET['codigo']) && isset($_GET['idProyecto'])) {

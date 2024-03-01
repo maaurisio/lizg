@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Verificar la contraseña
         if ($password === $stored_password) {
-            $_SESSION['id_usuario'] = $row['id']; // Cambiamos 'id' por 'id_usuario'
+            $_SESSION['id_usuario'] = $row['id'];
             $_SESSION['nombre'] = $row['nombre'];
             $_SESSION['rol'] = $row['rol']; // Agregar el rol del usuario a la sesión
             header("Location: views/home.php");

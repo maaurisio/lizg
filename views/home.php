@@ -9,6 +9,11 @@ $nombre = $_SESSION['nombre'];
 $rol = $_SESSION['rol']; // Obtener el rol del usuario de la sesión
 $idUsuario = $_SESSION['id_usuario']; //Obtener el id del usuario
 
+if (!$idUsuario) {
+    header("Location: ../index.php");
+}
+
+
 // Realizar la consulta para obtener los proyectos
 if ($rol === 'admin') {
     // Si el usuario es un administrador, seleccionar todos los proyectos
@@ -80,8 +85,9 @@ $result = $stmt->get_result();
             </div>
 
             <div class="col-auto">
-                <a href="../index.php" class="btn btn-danger">Salir</a>
+                <a href="logout.php" class="btn btn-danger">Salir</a>
             </div>
+
 
             <form action="" method="post" accept-charset="utf-8">
 

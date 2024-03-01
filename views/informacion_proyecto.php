@@ -5,6 +5,16 @@ include "../config/database.php";
 // Incluir el encabezado
 include "../config/partials/header.php";
 
+session_start();
+
+$nombre = $_SESSION['nombre'];
+$rol = $_SESSION['rol']; // Obtener el rol del usuario de la sesión
+$idUsuario = $_SESSION['id_usuario']; //Obtener el id del usuario
+
+if (!$idUsuario) {
+    header("Location: ../index.php");
+}
+
 // Variable para almacenar el ID del proyecto
 $idProyecto = isset($_GET['id']) ? $_GET['id'] : null;
 
