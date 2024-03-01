@@ -33,10 +33,13 @@ if ($idProyecto) {
     // Escribir los datos en el archivo Excel
     $row = 2; // Comenzar en la fila 2 (debajo de los encabezados)
     while ($data = $result->fetch_assoc()) {
-        $sheet->setCellValue('A' . $row, $data['codigoMaterial']);
-        $sheet->setCellValue('B' . $row, $data['nombre_material']);
-        $sheet->setCellValue('C' . $row, $data['cantidad']);
-        $row++;
+        // Verificar si la cantidad es cero (0)
+        if ($data['cantidad'] != 0) {
+            $sheet->setCellValue('A' . $row, $data['codigoMaterial']);
+            $sheet->setCellValue('B' . $row, $data['nombre_material']);
+            $sheet->setCellValue('C' . $row, $data['cantidad']);
+            $row++;
+        }
     }
 
     // Configurar el tipo de contenido y el nombre del archivo
