@@ -18,7 +18,7 @@ if (!$idUsuario) {
 // Variable para almacenar el ID del proyecto
 $idProyecto = isset($_GET['id']) ? $_GET['id'] : null;
 
-// Variable para almacenar mensajes de error o éxito
+// Variable para almacenar mensceajes de error o éxito
 $mensaje = '';
 $tipoMensaje = '';
 $readonly = '';
@@ -43,7 +43,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $materiales[$codigoMaterial] = $value;
             }
         }
-
         // Insertar o actualizar los datos en la tabla de la base de datos
         foreach ($materiales as $codigoMaterial => $cantidad) {
             // Consultar la cantidad actual en la base de datos
@@ -54,24 +53,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $result_select = $stmt_select->get_result();
 
             if ($result_select->num_rows > 0) {
-                // Si hay una fila, la cantidad ya existe en la base de datos, entonces actualizamos
-                $row_select = $result_select->fetch_assoc();
-                $cantidadActual = $row_select['cantidad'];
-                if ($cantidad != $cantidadActual) {
-                    // Si la cantidad es diferente, actualizamos
-                    $sql_update = "UPDATE detalle SET cantidad = ? WHERE idProyecto = ? AND codigoMaterial = ?";
-                    $stmt_update = $conn->prepare($sql_update);
-                    $stmt_update->bind_param("isi", $cantidad, $idProyecto, $codigoMaterial);
-                    $stmt_update->execute();
-                }
+                // Si el material ya existe para el proyecto, actualizar la cantidad
+                $sql_update = "UPDATE detalle SET cantidad = ? WHERE idProyecto = ? AND codigoMaterial = ?";
+                $stmt_update = $conn->prepare($sql_update);
+                $stmt_update->bind_param("isi", $cantidad, $idProyecto, $codigoMaterial);
+                $stmt_update->execute();
             } else {
-                // Si no hay fila, la cantidad no existe en la base de datos, entonces insertamos
+                // Si el material no existe para el proyecto, insertarlo
                 $sql_insert = "INSERT INTO detalle (idProyecto, codigoMaterial, cantidad) VALUES (?, ?, ?)";
                 $stmt_insert = $conn->prepare($sql_insert);
                 $stmt_insert->bind_param("isi", $idProyecto, $codigoMaterial, $cantidad);
                 $stmt_insert->execute();
             }
         }
+
 
         // Marcar como guardado
         $guardado = true;
@@ -197,31 +192,41 @@ if (!empty($idProyecto)) {
                             <?php
                             // Verificar si se encontraron materiales asociados al proyecto
                             if ($num_materiales > 0) {
-                                // Mostrar los materiales en la tabla
+                                // Crear un array para almacenar los códigos de material ya procesados
+                                $codigos_procesados = array();
+
                                 // Mostrar los materiales en la tabla
                                 while ($row = $result_materiales->fetch_assoc()) {
                                     $codigo = stripslashes($row['codigo']);
                                     $nombre = stripslashes($row['nombre']);
                                     $cantidad_detalle = $row['cantidad_detalle'];
-                            ?>
-                                    <tr>
-                                        <td><?php echo $codigo; ?></td>
-                                        <td><?php echo $nombre; ?></td>
-                                        <td>
-                                            <!-- Campo de entrada para la cantidad -->
-                                            <input type='number' min="0" autofocus name='cantidad_<?php echo $codigo; ?>' class='form-control' value='<?php echo $cantidad_detalle; ?>' <?php echo $readonly; ?> required>
-                                        </td>
-                                        <td>
-                                            <!-- Siempre mostrar el botón de "Editar" -->
-                                            <button type="button" class="btn btn-warning editar-cantidad" data-codigo="<?php echo $codigo; ?>">Editar</button>
-                                        </td>
-                                    </tr>
 
+                                    // Verificar si el código de material ya fue procesado
+                                    if (!in_array($codigo, $codigos_procesados)) {
+                                        // Agregar el código a la lista de códigos procesados
+                                        $codigos_procesados[] = $codigo;
+
+                                        // Mostrar la fila en la tabla
+                            ?>
+                                        <tr>
+                                            <td><?php echo $codigo; ?></td>
+                                            <td><?php echo $nombre; ?></td>
+                                            <td>
+                                                <!-- Campo de entrada para la cantidad -->
+                                                <input type='number' min="0" autofocus name='cantidad_<?php echo $codigo; ?>' class='form-control' value='<?php echo $cantidad_detalle; ?>' <?php echo $readonly; ?> required>
+                                            </td>
+                                            <td>
+                                                <!-- Siempre mostrar el botón de "Editar" -->
+                                                <button type="button" class="btn btn-warning editar-cantidad" data-codigo="<?php echo $codigo; ?>">Editar</button>
+                                            </td>
+                                        </tr>
                             <?php
+                                    }
                                 }
                             } else {
                                 echo "<tr><td colspan='4'>No hay materiales asociados a este proyecto.</td></tr>";
                             }
+
                             ?>
                         </tbody>
                     </table>
