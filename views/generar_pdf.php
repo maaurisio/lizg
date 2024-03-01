@@ -74,12 +74,15 @@ $result = $stmt->get_result();
 
 // Recorrer los resultados y agregar filas a la tabla HTML
 while ($row = $result->fetch_assoc()) {
-    $html .= '
-    <tr>
-    <td>' . $row['codigoMaterial'] . '</td>
-    <td>' . $row['nombre'] . '</td>
-    <td>' . $row['cantidad'] . '</td>
-    </tr>';
+    // Verificar si la cantidad es cero (0)
+    if ($row['cantidad'] != 0) {
+        $html .= '
+        <tr>
+        <td>' . $row['codigoMaterial'] . '</td>
+        <td>' . $row['nombre'] . '</td>
+        <td>' . $row['cantidad'] . '</td>
+        </tr>';
+    }
 }
 
 $html .= '
