@@ -106,18 +106,27 @@ if ($idProyecto) {
                 <?php
                 // Verificar si se encontraron materiales
                 if ($result && $result->num_rows > 0) {
+                    // Inicializar un array para almacenar los códigos de materiales seleccionados
+                    $selectedMaterials = array();
+
                     // Mostrar los materiales con checkboxes
                     while ($row = $result->fetch_assoc()) {
                         // Verificar si este material está seleccionado
                         $checked = $row['material_usado'] ? 'checked' : '';
+
+                        // Verificar si el material ya ha sido mostrado en la lista
+                        if (!in_array($row['codigo'], $selectedMaterials)) {
+                            // Agregar el código del material a la lista de materiales seleccionados
+                            $selectedMaterials[] = $row['codigo'];
                 ?>
-                        <div class="form-check">
-                            <input class="form-check-input border-primary" type="checkbox" name="materiales[]" value="<?php echo $row['codigo']; ?>" <?php echo $checked; ?>>
-                            <label class="form-check-label">
-                                <?php echo $row['nombre']; ?>
-                            </label>
-                        </div>
+                            <div class="form-check">
+                                <input class="form-check-input border-primary" type="checkbox" name="materiales[]" value="<?php echo $row['codigo']; ?>" <?php echo $checked; ?>>
+                                <label class="form-check-label">
+                                    <?php echo $row['nombre']; ?>
+                                </label>
+                            </div>
                 <?php
+                        }
                     }
                 } else {
                     // No se encontraron materiales, mostrar mensaje y enlace al formulario para agregar material
@@ -137,6 +146,9 @@ if ($idProyecto) {
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Limpiar almacenamiento local al cargar la página
+            limpiarLocalStorage();
+
             // Obtiene los materiales seleccionados almacenados en el local storage
             var selectedMaterials = JSON.parse(localStorage.getItem('selectedMaterials_' + <?php echo $idProyecto; ?>)) || [];
 
@@ -155,11 +167,10 @@ if ($idProyecto) {
             var checkboxes = document.querySelectorAll('input[name="materiales[]"]');
             checkboxes.forEach(function(checkbox) {
                 checkbox.addEventListener('change', function(event) {
-                    // Si el checkbox está marcado, agrega el material seleccionado a la lista
-                    if (this.checked) {
+                    // Si el checkbox está marcado y el material no está en la lista, agregarlo
+                    if (this.checked && !selectedMaterials.includes(parseInt(this.value))) {
                         selectedMaterials.push(parseInt(this.value));
-                    } else {
-                        // Si el checkbox está desmarcado, remueve el material seleccionado de la lista
+                    } else if (!this.checked) { // Si el checkbox está desmarcado, remover el material de la lista
                         var index = selectedMaterials.indexOf(parseInt(this.value));
                         if (index !== -1) {
                             selectedMaterials.splice(index, 1);
