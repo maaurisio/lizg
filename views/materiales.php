@@ -120,7 +120,8 @@ if ($idProyecto) {
                 <?php
                     }
                 } else {
-                    echo "No se encontraron materiales.";
+                    // No se encontraron materiales, mostrar mensaje y enlace al formulario para agregar material
+                    echo 'No se encontraron materiales. <a href="new_material.php?id=' . $idProyecto . '">Agregar nuevo material</a>';
                 }
                 ?>
             </div>
