@@ -59,7 +59,7 @@ if ($idProyecto) {
 
 <body>
     <div class="container">
-    <h1>Lista de Materiales</h1>
+        <h1>Lista de Materiales</h1>
         <!-- Formulario de búsqueda -->
         <form action="" method="POST" class="mb-3">
             <div class="input-group">
@@ -67,7 +67,12 @@ if ($idProyecto) {
             </div>
         </form>
 
-        <a href="<?php echo isset($_GET['id']) ? 'informacion_proyecto.php?id=' . $_GET['id'] : 'informacion_proyecto.php'; ?>" class="btn btn-warning m-2">Volver</a>
+        <div class="d-flex justify-content-between">
+            <!-- volver -->
+            <a href="<?php echo isset($_GET['id']) ? 'informacion_proyecto.php?id=' . $_GET['id'] : 'informacion_proyecto.php'; ?>" class="btn btn-warning m-2">Volver</a>
+            <!-- Agregar nuevo producto que no exista en la base -->
+            <a href="<?php echo isset($_GET['id']) ? 'new_material.php?id=' . $_GET['id'] : 'informacion_proyecto.php'; ?>" class="btn btn-success m-2">Agregar Producto Nuevo</a>
+        </div>
 
         <!-- Formulario para mostrar y seleccionar materiales -->
         <form action="" method="POST" class="d-flex flex-column">
@@ -158,7 +163,7 @@ if ($idProyecto) {
             }
         });
     </script>
-     <script>
+    <script>
         document.addEventListener("DOMContentLoaded", function() {
             var busquedaInput = document.getElementById('busqueda');
             var listaMateriales = document.getElementById('listaMateriales');

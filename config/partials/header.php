@@ -25,7 +25,7 @@ $url = "https://tecniredinco.com/";
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #bababa;
+            background-color: #F4F6F1;
         }
 
         #descripcion {

@@ -20,20 +20,32 @@ $codigo = ''; // Inicializar la variable $codigo
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre_material = $_POST['nombre_material'];
 
-    // Generar un código único combinando una marca de tiempo y una cadena aleatoria
-    $codigo = hash('crc32', uniqid() . '-' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 6));
+    // Obtener el código máximo actual en la tabla de materiales
+    $stmt_max = $conn->prepare("SELECT MAX(codigo) AS max_codigo FROM materiales");
+    $stmt_max->execute();
+    $result_max = $stmt_max->get_result();
+    $row_max = $result_max->fetch_assoc();
+    $max_codigo = $row_max['max_codigo'];
+
+    // Generar un nuevo código único incrementando el máximo actual
+    if ($max_codigo === null) {
+        // Si no hay materiales en la tabla, empezar desde 1
+        $nuevo_codigo = 1;
+    } else {
+        $nuevo_codigo = intval($max_codigo) + 1;
+    }
 
     $stmt = $conn->prepare("INSERT INTO materiales (codigo, nombre) VALUES (?, ?)");
-    $stmt->bind_param("ss", $codigo, $nombre_material);
+    $stmt->bind_param("ss", $nuevo_codigo, $nombre_material);
 
     if ($stmt->execute()) {
         header("Location: materiales.php?mensaje=Nuevo+material+agregado&id=$idProyecto");
         exit; // Importante: detener la ejecución del script después de redirigir
     }
-} else {
-    // Generar un código para mostrarlo en el campo de entrada cuando el formulario se carga por primera vez
-    $codigo = hash('crc32', uniqid() . '-' . substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 6));
 }
+
+
+
 
 ?>
 
@@ -49,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Campo readonly para mostrar el código generado -->
             <div class="form-group">
                 <label for="codigo">Código Generado</label>
-                <input type="text" class="form-control" id="codigo" name="codigo" value="<?php echo $codigo; ?>" readonly>
+                <input type="text" class="form-control" id="codigo" name="codigo" value="<?php echo $codigo; ?>" readonly placeholder="EL CODIGO SE GENERA AUTOMATICAMENTE">
             </div>
             <!-- ------------------------------------------------- -->
             <div class="my-2">
