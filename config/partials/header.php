@@ -6,7 +6,7 @@ $url = "https://tecniredinco.com/";
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -25,6 +25,7 @@ $url = "https://tecniredinco.com/";
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #bababa;
         }
 
         #descripcion {

@@ -27,30 +27,6 @@ $stmt->bind_param("i", $idProyecto);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Verificar si se envió el formulario de búsqueda
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Obtener el término de búsqueda
-    $busqueda = isset($_POST['busqueda']) ? $_POST['busqueda'] : '';
-
-    // Verificar si el término de búsqueda tiene al menos 4 letras
-    if (strlen($busqueda) >= 4) {
-        // Realizar la búsqueda en la base de datos y mostrar los resultados
-        $sql = "SELECT m.*, mp.codigoMaterial AS material_usado FROM materiales m LEFT JOIN materialesproyecto mp ON m.codigo = mp.codigoMaterial AND mp.idProyecto = ? WHERE m.nombre LIKE ?";
-        $stmt = $conn->prepare($sql);
-        $param_busqueda = "%" . $busqueda . "%";
-        $stmt->bind_param("is", $idProyecto, $param_busqueda);
-        $stmt->execute();
-        $result = $stmt->get_result();
-    } else {
-        // Mostrar todos los materiales si el término de búsqueda no cumple con los requisitos
-        $sql = "SELECT m.*, mp.codigoMaterial AS material_usado FROM materiales m LEFT JOIN materialesproyecto mp ON m.codigo = mp.codigoMaterial AND mp.idProyecto = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $idProyecto);
-        $stmt->execute();
-        $result = $stmt->get_result();
-    }
-}
-
 // Verificar si se envió el formulario para guardar la selección de materiales
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Verificar si se recibieron materiales seleccionados
@@ -64,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->execute();
         }
 
-        echo "Se genero completamente";
+        echo "Se generó completamente";
         header("Location: informacion_proyecto.php?id=$idProyecto"); // Redirige con el ID del proyecto
         exit; // Detiene la ejecución del script después de la redirección
     }
@@ -83,12 +59,11 @@ if ($idProyecto) {
 
 <body>
     <div class="container">
-        <h1>Lista de Materiales</h1>
+    <h1>Lista de Materiales</h1>
         <!-- Formulario de búsqueda -->
         <form action="" method="POST" class="mb-3">
             <div class="input-group">
-                <input type="text" class="form-control" name="busqueda" placeholder="Buscar materiales" value="<?php echo $busqueda; ?>">
-                <button type="submit" class="btn btn-primary">Buscar</button>
+                <input type="text" class="form-control" id="busqueda" name="busqueda" placeholder="Buscar materiales">
             </div>
         </form>
 
@@ -103,26 +78,23 @@ if ($idProyecto) {
             </div>
             <div class="form-group mt-3">
                 <!-- Contenedor para la lista de materiales -->
-                <?php
-                // Verificar si se encontraron materiales
-                if ($result && $result->num_rows > 0) {
-                    // Mostrar los materiales con checkboxes
-                    while ($row = $result->fetch_assoc()) {
-                        // Verificar si este material está seleccionado
-                        $checked = $row['material_usado'] ? 'checked' : '';
-                ?>
-                        <div class="form-check">
-                            <input class="form-check-input border-primary" type="checkbox" name="materiales[]" value="<?php echo $row['codigo']; ?>" <?php echo $checked; ?>>
-                            <label class="form-check-label">
-                                <?php echo $row['nombre']; ?>
-                            </label>
-                        </div>
-                <?php
+                <div id="listaMateriales">
+                    <?php
+                    // Verificar si se encontraron materiales
+                    if ($result && $result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            // Mostrar los materiales
+                            echo '<div class="form-check">';
+                            echo '<input class="form-check-input border-primary" type="checkbox" name="materiales[]" value="' . $row['codigo'] . '">';
+                            echo '<label class="form-check-label">' . $row['nombre'] . '</label>';
+                            echo '</div>';
+                        }
+                    } else {
+                        // No se encontraron materiales
+                        echo 'No se encontraron materiales. <a href="new_material.php?id=' . $idProyecto . '">Agregar nuevo material</a>';
                     }
-                } else {
-                    echo "No se encontraron materiales.";
-                }
-                ?>
+                    ?>
+                </div>
             </div>
         </form>
 
@@ -136,6 +108,9 @@ if ($idProyecto) {
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Limpiar almacenamiento local al cargar la página
+            limpiarLocalStorage();
+
             // Obtiene los materiales seleccionados almacenados en el local storage
             var selectedMaterials = JSON.parse(localStorage.getItem('selectedMaterials_' + <?php echo $idProyecto; ?>)) || [];
 
@@ -154,11 +129,10 @@ if ($idProyecto) {
             var checkboxes = document.querySelectorAll('input[name="materiales[]"]');
             checkboxes.forEach(function(checkbox) {
                 checkbox.addEventListener('change', function(event) {
-                    // Si el checkbox está marcado, agrega el material seleccionado a la lista
-                    if (this.checked) {
+                    // Si el checkbox está marcado y el material no está en la lista, agregarlo
+                    if (this.checked && !selectedMaterials.includes(parseInt(this.value))) {
                         selectedMaterials.push(parseInt(this.value));
-                    } else {
-                        // Si el checkbox está desmarcado, remueve el material seleccionado de la lista
+                    } else if (!this.checked) { // Si el checkbox está desmarcado, remover el material de la lista
                         var index = selectedMaterials.indexOf(parseInt(this.value));
                         if (index !== -1) {
                             selectedMaterials.splice(index, 1);
@@ -182,6 +156,28 @@ if ($idProyecto) {
                 });
                 botonGuardar.disabled = !algunSeleccionado;
             }
+        });
+    </script>
+     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var busquedaInput = document.getElementById('busqueda');
+            var listaMateriales = document.getElementById('listaMateriales');
+
+            busquedaInput.addEventListener('input', function() {
+                var busqueda = this.value.toLowerCase();
+                var materiales = listaMateriales.getElementsByClassName('form-check');
+
+                for (var i = 0; i < materiales.length; i++) {
+                    var label = materiales[i].getElementsByTagName('label')[0];
+                    var texto = label.textContent.toLowerCase();
+
+                    if (texto.indexOf(busqueda) !== -1) {
+                        materiales[i].style.display = '';
+                    } else {
+                        materiales[i].style.display = 'none';
+                    }
+                }
+            });
         });
     </script>
 </body>
