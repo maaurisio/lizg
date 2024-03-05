@@ -50,8 +50,28 @@ th {
 </head>
 <body>
 <img src="../images/encabezadoactual.png" style="margin-bottom: 15px;"><br>
-<h2>Detalles del Proyecto: ' . $nombreProyecto . '</h2>
-<p><strong>Técnico:</strong> ' . $_SESSION['nombre'] . '</p>
+<h2>Detalles del Proyecto: ' . $nombreProyecto . '</h2>';
+
+// Consulta SQL para obtener los detalles del proyecto y el nombre del técnico que lo creó
+$sql = "SELECT d.*, m.nombre, u.nombre AS nombre_tecnico
+        FROM detalle d
+        INNER JOIN materiales m ON d.codigoMaterial = m.codigo
+        INNER JOIN proyecto p ON d.idProyecto = p.id
+        INNER JOIN usuarios u ON p.usuario_id = u.id
+        WHERE d.idProyecto = ?";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $idProyecto);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Obtener el nombre del técnico que creó el proyecto
+$nombreTecnico = "";
+if ($row = $result->fetch_assoc()) {
+    $nombreTecnico = $row['nombre_tecnico'];
+}
+
+$html .= '<p><strong>Técnico:</strong> ' . $nombreTecnico . '</p>
 <p><strong>Fecha:</strong> ' . date('d/m/Y') . '</p>
 
 <table>
@@ -60,17 +80,6 @@ th {
 <th>Material</th>
 <th>Cantidad</th>
 </tr>';
-
-// Consulta SQL para obtener los detalles del proyecto
-$sql = "SELECT d.*, m.nombre
-        FROM detalle d
-        INNER JOIN materiales m ON d.codigoMaterial = m.codigo
-        WHERE d.idProyecto = ?";
-
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $idProyecto);
-$stmt->execute();
-$result = $stmt->get_result();
 
 // Recorrer los resultados y agregar filas a la tabla HTML
 while ($row = $result->fetch_assoc()) {
@@ -96,8 +105,9 @@ $dompdf->loadHtml($html);
 // Renderizar el PDF
 $dompdf->render();
 
-// Generar el PDF en la salida
-$dompdf->stream();
+// Generar el PDF en la salida con nombre de archivo personalizado
+$dompdf->stream("$nombreProyecto.pdf", array("Attachment" => false));
+
 
 // Después de renderizar el PDF
 echo json_encode(array("success" => true));
