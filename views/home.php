@@ -17,14 +17,14 @@ if (!$idUsuario) {
 // Realizar la consulta para obtener los proyectos
 if ($rol === 'admin') {
     // Si el usuario es un administrador, seleccionar todos los proyectos
-    $sql = "SELECT p.id, p.nombre AS nombre_proyecto, u.nombre AS nombre_tecnico 
+    $sql = "SELECT p.id, p.fecha AS fecha, p.nombre AS nombre_proyecto, u.nombre AS nombre_tecnico 
             FROM proyecto p 
             INNER JOIN usuarios u ON p.usuario_id = u.id 
             ORDER BY p.id DESC";
     $stmt = $conn->prepare($sql);
 } else {
     // Si el usuario es un usuario normal, seleccionar solo los proyectos asociados a su ID de usuario
-    $sql = "SELECT p.id, p.nombre AS nombre_proyecto, u.nombre AS nombre_tecnico 
+    $sql = "SELECT p.id, p.fecha AS fecha, p.nombre AS nombre_proyecto, u.nombre AS nombre_tecnico 
             FROM proyecto p 
             INNER JOIN usuarios u ON p.usuario_id = u.id 
             WHERE p.usuario_id = ? 
@@ -92,9 +92,10 @@ $result = $stmt->get_result();
             <form action="" method="post" accept-charset="utf-8">
 
                 <table class="table table-sm table-striped table-hover mt-4">
-                    <thead class="table-dark">
+                <thead class="table-dark">
                         <tr>
                             <th>Id</th>
+                            <th>Fecha</th>
                             <th>Nombre del Proyecto</th>
                             <th>Técnico</th>
                             <th>Acción</th>
@@ -109,6 +110,7 @@ $result = $stmt->get_result();
                                 // Imprimir cada fila en la tabla
                                 echo "<tr>";
                                 echo "<td>" . $row['id'] . "</td>";
+                                echo "<td>" . $row['fecha'] . "</td>"; // Mostrar la fecha
                                 echo "<td>" . $row['nombre_proyecto'] . "</td>";
                                 echo "<td>" . $row['nombre_tecnico'] . "</td>";
                                 echo "<td><a href='informacion_proyecto.php?id=" . $row['id'] . "' class='btn btn-success'>Visualizar</a></td>";
@@ -116,7 +118,7 @@ $result = $stmt->get_result();
                             }
                         } else {
                             // Si no hay proyectos, imprimir una fila indicando que no hay proyectos
-                            echo "<tr><td colspan='4'>No hay proyectos disponibles.</td></tr>";
+                            echo "<tr><td colspan='5'>No hay proyectos disponibles.</td></tr>";
                         }
 
                         ?>
