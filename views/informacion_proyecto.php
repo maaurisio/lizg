@@ -85,13 +85,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Consultar información del proyecto
 if (!empty($idProyecto)) {
-    $sql_proyecto = "SELECT * FROM proyecto WHERE id = ?";
-    $stmt_proyecto = $conn->prepare($sql_proyecto);
-    $stmt_proyecto->bind_param("i", $idProyecto);
-    $stmt_proyecto->execute();
-    $result_proyecto = $stmt_proyecto->get_result();
+    $sql_proyecto = "SELECT p.*, s.nombre_servicio 
+                     FROM proyecto p 
+                     INNER JOIN servicio s ON p.servicio_id = s.id 
+                     WHERE p.id = ?";
+     $stmt_proyecto = $conn->prepare($sql_proyecto);
+     $stmt_proyecto->bind_param("i", $idProyecto);
+     $stmt_proyecto->execute();
+     $result_proyecto = $stmt_proyecto->get_result();
 
-    if ($result_proyecto->num_rows > 0) {
+     if ($result_proyecto->num_rows > 0) {
         $proyecto = $result_proyecto->fetch_assoc();
 
         // Definir la variable $num_materiales y establecerla en 0 inicialmente
@@ -136,11 +139,9 @@ if (!empty($idProyecto)) {
                     <h1>Información del Proyecto</h1>
                     <p><strong>Nombre del Proyecto:</strong> <?php echo $proyecto['nombre']; ?></p>
                     <p><strong>Descripción del Proyecto:</strong> <?php echo $proyecto['descripcion']; ?></p>
+                    <p><strong>Servicio del Proyecto:</strong> <?php echo $proyecto['nombre_servicio']; ?></p>
                 </div>
             </div>
-
-
-
 
             <!-- Código HTML para mostrar la alerta -->
             <?php if (!empty($mensaje)) : ?>
@@ -153,13 +154,12 @@ if (!empty($idProyecto)) {
                 </div>
             <?php endif; ?>
 
-
-
-
             <div class="container container-fluid d-flex justify-content-evenly contenedor-botones">
                 <a href="home.php" class="btn btn-warning mb-2">Volver</a>
                 <a href="materiales.php?id=<?php echo $idProyecto; ?>" class="btn btn-dark mb-2">Ver Lista de Materiales</a>
-
+                <!-- Agregar nuevo producto que no exista en la base -->
+                <a href="new_material.php?id=<?php echo $idProyecto; ?>" class="btn btn-dark mb-2">Agregar Nuevo Material</a>
+               
                 <?php
                 // Verificar si hay materiales para habilitar o deshabilitar los botones
                 if ($num_materiales > 0) {
@@ -266,7 +266,6 @@ if (!empty($idProyecto)) {
             });
         });
 
-        // Bloquear los campos de cantidad que ya tienen información y mostrar el botón "Editar"
         // Bloquear los campos de cantidad que ya tienen información y mostrar el botón "Editar"
         document.addEventListener("DOMContentLoaded", function() {
             const inputsCantidad = document.querySelectorAll('input[name^="cantidad_"]');

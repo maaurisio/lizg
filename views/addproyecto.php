@@ -24,11 +24,11 @@ $idUsuario = $_SESSION['id_usuario'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = $_POST['nombre'];
     $descripcion = $_POST['descripcion'];
-
+    $servicioId = $_POST['servicio'];
     //Preparar la consulta
-    $stmt = $conn->prepare("INSERT INTO proyecto(nombre,descripcion,usuario_id) VALUES(?,?,?)");
+    $stmt = $conn->prepare("INSERT INTO proyecto(nombre,descripcion,usuario_id, servicio_id) VALUES(?,?,?,?)");
 
-    $stmt->bind_param("ssi", $nombre, $descripcion, $idUsuario);
+    $stmt->bind_param("ssii", $nombre, $descripcion, $idUsuario, $servicioId);
 
     if ($stmt->execute()) {
         // Redireccionar al usuario a la página de inicio con un mensaje de éxito
@@ -63,6 +63,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <label for="descripcion">Descripción:</label>
                                 <textarea class="form-control" id="descripcion" name="descripcion" rows="4" required></textarea>
                             </div>
+                            <div class="form-group mb-3">
+                                <label for="servicio" class="form-label">Servicio</label>
+                                <select name="servicio" id="servicio" class="form-select">
+                                    <?php 
+                                    // Consultar los servicios disponibles
+                                    $queryServicios = "SELECT id, nombre_servicio FROM servicio";
+                                    $resultServicios = $conn->query($queryServicios);
+
+                                    // Verificar si se encontraron resultados
+                                    if ($resultServicios->num_rows > 0) {
+                                        // Iterar sobre cada fila de resultados y mostrar los servicios en el menú desplegable
+                                        while ($row = $resultServicios->fetch_assoc()) {
+                                            echo '<option value="' . $row['id'] . '">' . $row['nombre_servicio'] . '</option>';
+                                        }
+                                    } else {
+                                        echo '<option value="" disabled>No se encontraron servicios</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
 
                             <div class="d-flex justify-content-between">
                                 <button type="submit" class="btn btn-primary btn-block">Crear Proyecto</button>

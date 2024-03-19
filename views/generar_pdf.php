@@ -65,11 +65,11 @@ $stmt->bind_param("i", $idProyecto);
 $stmt->execute();
 $result = $stmt->get_result();
 
+// Obtener todos los resultados en un array
+$rows = $result->fetch_all(MYSQLI_ASSOC);
+
 // Obtener el nombre del técnico que creó el proyecto
-$nombreTecnico = "";
-if ($row = $result->fetch_assoc()) {
-    $nombreTecnico = $row['nombre_tecnico'];
-}
+$nombreTecnico = !empty($rows) ? $rows[0]['nombre_tecnico'] : '';
 
 $html .= '<p><strong>Técnico:</strong> ' . $nombreTecnico . '</p>
 <p><strong>Fecha:</strong> ' . date('d/m/Y') . '</p>
@@ -81,8 +81,8 @@ $html .= '<p><strong>Técnico:</strong> ' . $nombreTecnico . '</p>
 <th>Cantidad</th>
 </tr>';
 
-// Recorrer los resultados y agregar filas a la tabla HTML
-while ($row = $result->fetch_assoc()) {
+// Recorrer los resultados almacenados en el array y agregar filas a la tabla HTML
+foreach ($rows as $row) {
     // Verificar si la cantidad es cero (0)
     if ($row['cantidad'] != 0) {
         $html .= '
@@ -107,7 +107,6 @@ $dompdf->render();
 
 // Generar el PDF en la salida con nombre de archivo personalizado
 $dompdf->stream("$nombreProyecto.pdf", array("Attachment" => false));
-
 
 // Después de renderizar el PDF
 echo json_encode(array("success" => true));

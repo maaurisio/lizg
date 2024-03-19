@@ -70,8 +70,7 @@ if ($idProyecto) {
         <div class="d-flex justify-content-between">
             <!-- volver -->
             <a href="<?php echo isset($_GET['id']) ? 'informacion_proyecto.php?id=' . $_GET['id'] : 'informacion_proyecto.php'; ?>" class="btn btn-warning m-2">Volver</a>
-            <!-- Agregar nuevo producto que no exista en la base -->
-            <a href="<?php echo isset($_GET['id']) ? 'new_material.php?id=' . $_GET['id'] : 'informacion_proyecto.php'; ?>" class="btn btn-success m-2">Agregar Producto Nuevo</a>
+      
         </div>
 
         <!-- Formulario para mostrar y seleccionar materiales -->
