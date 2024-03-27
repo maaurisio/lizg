@@ -70,6 +70,7 @@ $rows = $result->fetch_all(MYSQLI_ASSOC);
 
 // Obtener el nombre del técnico que creó el proyecto
 $nombreTecnico = !empty($rows) ? $rows[0]['nombre_tecnico'] : '';
+$html .= '<h4>ID del Proyecto: ' . $idProyecto . '</h4>';
 
 $html .= '<p><strong>Técnico:</strong> ' . $nombreTecnico . '</p>
 <p><strong>Fecha:</strong> ' . date('d/m/Y') . '</p>
